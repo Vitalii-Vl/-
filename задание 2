@@ -1,0 +1,38 @@
+#include <iostream>
+#include <iomanip> // для форматирования вывода
+
+using namespace std;
+
+int main() {
+    double num1, num2;
+
+    cout << "Введите два числа: ";
+    cin >> num1 >> num2;
+
+    // Вычисление суммы
+    double sum = num1 + num2;
+
+    // Вычисление разности
+    double difference = num1 - num2;
+
+    // Вычисление произведения
+    double product = num1 * num2;
+
+    // Вычисление частного (с проверкой деления на ноль)
+    if (num2 != 0) {
+        double quotient = num1 / num2;
+
+
+        // Вывод результатов с форматированием
+        cout << fixed << setprecision(2); // Установка точности вывода до 2 знаков после запятой
+        cout << "Сумма: " << sum << endl;
+        cout << "Разность: " << difference << endl;
+        cout << "Произведение: " << product << endl;
+        cout << "Частное: " << quotient << endl;
+
+    } else {
+        cout << "Деление на ноль невозможно!" << endl;
+    }
+
+    return 0;
+}
