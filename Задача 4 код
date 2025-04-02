@@ -1,0 +1,49 @@
+#include <iostream>
+#include <cmath>
+#include <iomanip>
+#include <vector>
+
+using namespace std;
+
+int main() {
+    double delta_x = 0.2;
+    double start_x = 1.0;
+    double end_x = 3.0;
+
+    cout << setw(10) << "x" << setw(20) << "y" << endl;
+    cout << setprecision(10);
+
+
+    for (double x = start_x; x <= end_x; x += delta_x) {
+        if (x <= 0) {
+            cout << setw(10) << x << setw(20) << "No solution (ln(x) undefined)" << endl;
+        } else {
+            double ln_x = log(x); // Natural logarithm
+            double y = sin(ln_x) - cos(ln_x) + 2 * ln_x;
+            cout << setw(10) << x << setw(20) << y << endl;
+        }
+    }
+
+    // Тестовый пример (использование вектора для хранения значений x)
+    vector<double> test_x;
+    for (double x = start_x; x <= end_x; x += delta_x) {
+         test_x.push_back(x);
+    }
+
+    cout << "\nTest case:\n";
+    cout << setw(10) << "x" << setw(20) << "y" << endl;
+
+    for (double x : test_x) {
+        if (x <= 0) {
+            cout << setw(10) << x << setw(20) << "No solution (ln(x) undefined)" << endl;
+        } else {
+            double ln_x = log(x);
+            double y = sin(ln_x) - cos(ln_x) + 2 * ln_x;
+            cout << setw(10) << x << setw(20) << y << endl;
+        }
+    }
+
+
+
+    return 0;
+}
