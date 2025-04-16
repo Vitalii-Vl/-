@@ -1,40 +1,52 @@
 #include <iostream>
 #include <cmath>
-#include <iomanip> // для setprecision
 
 using namespace std;
 
-double getA(const double x, const double y, const double z);
-double getB(const double x, const double y, const double z);
+/**
+ * @brief Функция для вычисления значения переменной 'a'.
+ * 
+ * @param x Значение переменной x.
+ * @param y Значение переменной y.
+ * @param z Значение переменной z.
+ * @return Вычисленное значение 'a'.
+ */
+double calculate_a(double x, double y, double z) {
+    return exp(-y * z) * sin(x * z - y) - sqrt(abs(y * z + x));
+}
 
+/**
+ * @brief Функция для вычисления значения переменной 'b'.
+ * 
+ * @param y Значение переменной y.
+ * @param z Значение переменной z.
+ * @param a Значение переменной a.
+ * @return Вычисленное значение 'b'.
+ */
+double calculate_b(double y, double z, double a) {
+    return y * sin(a * z * z * cos(2 * z)) - 1;
+}
 
 int main() {
-  // Исходные данные
-  double x = -0.5;
-  double y = 1.7;
-  double z = 0.44;
+    // Исходные данные (константы)
+    const double x = -0.5;
+    const double y = 1.7;
+    const double z = 0.44;
 
-  
-  
+    // Вывод исходных данных
+    cout << "Исходные данные:" << endl;
+    cout << "x = " << x << endl;
+    cout << "y = " << y << endl;
+    cout << "z = " << z << endl;
 
+    // Вычисление значений a и b
+    double a = calculate_a(x, y, z);
+    double b = calculate_b(y, z, a);
 
-  // Вывод результатов (с заданной точностью)
-  cout << "\nРезультаты вычислений:" << endl;
-  cout << fixed << setprecision(10); // Устанавливаем точность вывода до 10 знаков после запятой
-  cout << "a = " << getA(x, y, z) << endl;
-  cout << "b = " << getB(x, y, z) << endl;
+    // Вывод результатов
+    cout << "\nРезультаты вычислений:" << endl;
+    cout << "a = " << a << endl;
+    cout << "b = " << b << endl;
 
-  return 0;
-}
-
-double getA(const double x, const double y, const double z);
-{
-    return exp(-y * z) * sin(x * z - y) - sqrt(y * z + x);
-}
-}
-
-double getB(const double x, const double y, const double z);
-{
-   return y * sin(a * z * z * cos(2 * z)) - 1;
-}
+    return 0;
 }
