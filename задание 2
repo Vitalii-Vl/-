@@ -1,37 +1,96 @@
 #include <iostream>
-#include <iomanip> // для форматирования вывода
+#include <cmath>
+#include <limits>
 
 using namespace std;
+
+/**
+ * @brief Функция для вычисления суммы двух чисел.
+ * 
+ * @param num1 Первое число.
+ * @param num2 Второе число.
+ * @return Сумма двух чисел.
+ */
+double calculate_sum(double num1, double num2) {
+    return num1 + num2;
+}
+
+/**
+ * @brief Функция для вычисления разности двух чисел.
+ * 
+ * @param num1 Первое число.
+ * @param num2 Второе число.
+ * @return Разность двух чисел.
+ */
+double calculate_difference(double num1, double num2) {
+    return num1 - num2;
+}
+
+/**
+ * @brief Функция для вычисления произведения двух чисел.
+ * 
+ * @param num1 Первое число.
+ * @param num2 Второе число.
+ * @return Произведение двух чисел.
+ */
+double calculate_product(double num1, double num2) {
+    return num1 * num2;
+}
+
+/**
+ * @brief Функция для вычисления частного двух чисел.
+ * 
+ * @param num1 Первое число (делимое).
+ * @param num2 Второе число (делитель).
+ * @return Частное двух чисел.
+ * @throws runtime_error Если делитель равен нулю.
+ */
+double calculate_quotient(double num1, double num2) {
+    if (abs(num2) <= numeric_limits<double>::epsilon()) {
+        throw runtime_error("Деление на ноль невозможно!");
+    }
+    return num1 / num2;
+}
 
 int main() {
     double num1, num2;
 
-    cout << "Введите два числа: ";
-    cin >> num1 >> num2;
+    // Ввод данных с проверкой
+    while (true) {
+        cout << "Введите первое число: ";
+        cin >> num1;
+        if (cin.fail()) {
+            cout << "Некорректный ввод. Пожалуйста, введите число." << endl;
+            cin.clear();
+            cin.ignore(numeric_limits<streamsize>::max(), '\n');
+        } else {
+            break;
+        }
+    }
 
-    // Вычисление суммы
-    double sum = num1 + num2;
+    while (true) {
+        cout << "Введите второе число: ";
+        cin >> num2;
+        if (cin.fail()) {
+            cout << "Некорректный ввод. Пожалуйста, введите число." << endl;
+            cin.clear();
+            cin.ignore(numeric_limits<streamsize>::max(), '\n');
+        } else {
+            break;
+        }
+    }
 
-    // Вычисление разности
-    double difference = num1 - num2;
+    // Вычисления и вывод результатов
+    cout << "Сумма: " << calculate_sum(num1, num2) << endl;
+    cout << "Разность: " << calculate_difference(num1, num2) << endl;
+    cout << "Произведение: " << calculate_product(num1, num2) << endl;
 
-    // Вычисление произведения
-    double product = num1 * num2;
-
-    // Вычисление частного (с проверкой деления на ноль)
-    if (num2 != 0) {
-        double quotient = num1 / num2;
-
-
-        // Вывод результатов с форматированием
-        cout << fixed << setprecision(2); // Установка точности вывода до 2 знаков после запятой
-        cout << "Сумма: " << sum << endl;
-        cout << "Разность: " << difference << endl;
-        cout << "Произведение: " << product << endl;
+    try {
+        double quotient = calculate_quotient(num1, num2);
         cout << "Частное: " << quotient << endl;
-
-    } else {
-        cout << "Деление на ноль невозможно!" << endl;
+    } catch (const runtime_error& error) {
+        cerr << "Ошибка: " << error.what() << endl;
+        return 1; // Возвращаем 1 в случае ошибки
     }
 
     return 0;
