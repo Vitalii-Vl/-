@@ -1,49 +1,78 @@
 #include <iostream>
 #include <cmath>
 #include <iomanip>
-#include <vector>
+#include <limits> // Required for numeric_limits
 
 using namespace std;
 
+// Функция для вычисления y
+double calculate_y(double x) {
+    if (x <= 0) {
+        return numeric_limits<double>::quiet_NaN(); // Возвращаем NaN, если x <= 0
+    }
+    return sin(log(x)) - cos(log(x)) + 2 * log(x);
+}
+
 int main() {
-    double delta_x = 0.2;
-    double start_x = 1.0;
-    double end_x = 3.0;
+    double start_x, end_x, delta_x;
 
-    cout << setw(10) << "x" << setw(20) << "y" << endl;
-    cout << setprecision(10);
-
-
-    for (double x = start_x; x <= end_x; x += delta_x) {
-        if (x <= 0) {
-            cout << setw(10) << x << setw(20) << "No solution (ln(x) undefined)" << endl;
+    // Ввод данных с проверкой
+    while (true) {
+        cout << "Введите начальное значение x: ";
+        cin >> start_x;
+        if (cin.fail() || start_x <=0) {
+            cout << "Некорректный ввод. Введите положительное число." << endl;
+            cin.clear();
+            cin.ignore(numeric_limits<streamsize>::max(), '\n');
         } else {
-            double ln_x = log(x); // Natural logarithm
-            double y = sin(ln_x) - cos(ln_x) + 2 * ln_x;
-            cout << setw(10) << x << setw(20) << y << endl;
-        }
-    }
-
-    // Тестовый пример (использование вектора для хранения значений x)
-    vector<double> test_x;
-    for (double x = start_x; x <= end_x; x += delta_x) {
-         test_x.push_back(x);
-    }
-
-    cout << "\nTest case:\n";
-    cout << setw(10) << "x" << setw(20) << "y" << endl;
-
-    for (double x : test_x) {
-        if (x <= 0) {
-            cout << setw(10) << x << setw(20) << "No solution (ln(x) undefined)" << endl;
-        } else {
-            double ln_x = log(x);
-            double y = sin(ln_x) - cos(ln_x) + 2 * ln_x;
-            cout << setw(10) << x << setw(20) << y << endl;
+            break;
         }
     }
 
 
+    while (true) {
+        cout << "Введите конечное значение x: ";
+        cin >> end_x;
+
+        if (cin.fail() || end_x <= start_x) {
+            cout << "Некорректный ввод. Введите число больше начального значения x." << endl;
+            cin.clear();
+            cin.ignore(numeric_limits<streamsize>::max(), '\n');
+
+        } else {
+            break;
+        }
+    }
+
+    while (true) {
+        cout << "Введите шаг delta x (положительное число): ";
+        cin >> delta_x;
+
+         if (cin.fail() || delta_x <= 0) {
+            cout << "Некорректный ввод. Введите положительное число." << endl;
+            cin.clear();
+            cin.ignore(numeric_limits<streamsize>::max(), '\n');
+        } else {
+            break;
+        }
+    }
+
+    // Вывод таблицы
+    cout << setw(10) << "x" << setw(10) << "y" << endl;
+    cout << fixed << setprecision(6); // Устанавливаем точность вывода
+
+    for (double x = start_x; x < end_x + delta_x; x += delta_x) {
+        double y = calculate_y(x);
+        cout << setw(10) << x << setw(10);
+
+        if (isnan(y)) {
+          cout << "Нет решения" << endl;
+        }
+        else {
+          cout << y << endl;
+        }
+
+    }
 
     return 0;
 }
