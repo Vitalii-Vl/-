@@ -1,52 +1,29 @@
 #include <iostream>
-#include <cmath>
+#include <math.h>
+
+// Вариант 4
+// а = ⅇ ^ (-yz)⋅sin⁡〖(xz - y)〗 - √(| yz + x | )
+// b = y sin⁡(az ^ 2 cos⁡2z) - 1
+
+// float - тип данных, который хранят дробные числа
+// double - тип данных, который хранят дробные числа
 
 using namespace std;
 
-/**
- * @brief Функция для вычисления значения переменной 'a'.
- * 
- * @param x Значение переменной x.
- * @param y Значение переменной y.
- * @param z Значение переменной z.
- * @return Вычисленное значение 'a'.
- */
-double calculate_a(double x, double y, double z) {
-    return exp(-y * z) * sin(x * z - y) - sqrt(abs(y * z + x));
-}
+int main()
+{
+  // Смена кодировки для вывода русского языка
+  setlocale(LC_ALL, "Russian");
 
-/**
- * @brief Функция для вычисления значения переменной 'b'.
- * 
- * @param y Значение переменной y.
- * @param z Значение переменной z.
- * @param a Значение переменной a.
- * @return Вычисленное значение 'b'.
- */
-double calculate_b(double y, double z, double a) {
-    return y * sin(a * z * z * cos(2 * z)) - 1;
-}
+  float a, b; // переменные, содержащие значения функций
+  const float z = 0.44; // константа по условию задачи
+  const float x = -0.5; // константа по условию задачи
+  const float y = 1.7; // константа по условию задачи
 
-int main() {
-    // Исходные данные (константы)
-    const double x = -0.5;
-    const double y = 1.7;
-    const double z = 0.44;
+  a = exp(-y * z) * sin(x * z - y) - sqrt(abs(y * z + x));
+  b = y * sin(y * pow(z, 2) * cos(2 * z)) - 1;
 
-    // Вывод исходных данных
-    cout << "Исходные данные:" << endl;
-    cout << "x = " << x << endl;
-    cout << "y = " << y << endl;
-    cout << "z = " << z << endl;
+  cout << "Функция a: " << a << endl;
+  cout << "Функция b: " << b << endl;
 
-    // Вычисление значений a и b
-    double a = calculate_a(x, y, z);
-    double b = calculate_b(y, z, a);
-
-    // Вывод результатов
-    cout << "\nРезультаты вычислений:" << endl;
-    cout << "a = " << a << endl;
-    cout << "b = " << b << endl;
-
-    return 0;
 }
