@@ -1,97 +1,88 @@
 #include <iostream>
-#include <cmath>
-#include <limits>
-
+#include <stdlib.h>
 using namespace std;
-
 /**
- * @brief Функция для вычисления суммы двух чисел.
- * 
- * @param num1 Первое число.
- * @param num2 Второе число.
- * @return Сумма двух чисел.
+ * @brief считывает значение с клавиатуры с проверкой ввода
+ * @return введенное значение
  */
-double calculate_sum(double num1, double num2) {
-    return num1 + num2;
+double getValue();
+ 
+ /**
+ * @brief рассчитывает сумму чисел
+ * @param a - первое число
+ * @param b - второе число
+ */
+ double sum (const double a, const double b);
+ 
+ /**
+ * @brief рассчитывает разность чисел
+ * @param a - первое число
+ * @param b - второе число
+ */
+ double dif (const double a, const double b);
+ /**
+ * @brief рассчитывает произведение чисел
+ * @param a - первое число
+ * @param b - второе число
+ */
+ double pro (const double a, const double b);
+ /**
+ * @brief проверяет существование деления на 0
+ * @param b - знаменатель
+ */
+ void checkExist(const double a,const double b);
+ /**
+ * @brief рассчитывает частное чисел
+ * @param a - первое число
+ * @param b - второе число
+ */
+ 
+ double pri (const double a, const double b);
+ 
+ int main()
+ {
+  cout<<"Введите первое число ";
+  double a = getValue();
+  cout<<"Введите второе число ";
+  double b = getValue();
+  cout<<"Сумма чисел: "<<sum(a,b)<<endl;
+  cout<<"Разность чисел: "<<dif(a,b)<<endl;
+  cout<<"Произведение чисел: "<<pro(a,b)<<endl;
+  checkExist(a, b);
+  cout<<"Частное чисел: "<<pri(a,b)<<endl;
+  return 0;
+ }
+ double getValue()
+{
+    double value;
+    cin>>value;
+    if (cin.fail())
+    {
+        cout<<"Incorrect value"<<endl;
+        abort();
+    }
+    return value;
 }
 
-/**
- * @brief Функция для вычисления разности двух чисел.
- * 
- * @param num1 Первое число.
- * @param num2 Второе число.
- * @return Разность двух чисел.
- */
-double calculate_difference(double num1, double num2) {
-    return num1 - num2;
+
+double sum (const double a, const double b)
+{
+    return a + b;
 }
 
-/**
- * @brief Функция для вычисления произведения двух чисел.
- * 
- * @param num1 Первое число.
- * @param num2 Второе число.
- * @return Произведение двух чисел.
- */
-double calculate_product(double num1, double num2) {
-    return num1 * num2;
+double dif (const double a, const double b)
+{
+    return a - b;
 }
-
-/**
- * @brief Функция для вычисления частного двух чисел.
- * 
- * @param num1 Первое число (делимое).
- * @param num2 Второе число (делитель).
- * @return Частное двух чисел.
- * @throws runtime_error Если делитель равен нулю.
- */
-double calculate_quotient(double num1, double num2) {
-    if (abs(num2) <= numeric_limits<double>::epsilon()) {
-        throw runtime_error("Деление на ноль невозможно!");
-    }
-    return num1 / num2;
+double pro (const double a, const double b)
+{
+    return a*b;
 }
-
-int main() {
-    double num1, num2;
-
-    // Ввод данных с проверкой
-    while (true) {
-        cout << "Введите первое число: ";
-        cin >> num1;
-        if (cin.fail()) {
-            cout << "Некорректный ввод. Пожалуйста, введите число." << endl;
-            cin.clear();
-            cin.ignore(numeric_limits<streamsize>::max(), '\n');
-        } else {
-            break;
-        }
+void checkExist(const double a,const double b)
+{
+    if (b == 0)
+    {
+        cout<<"Error"<<endl;
+        abort();
     }
-
-    while (true) {
-        cout << "Введите второе число: ";
-        cin >> num2;
-        if (cin.fail()) {
-            cout << "Некорректный ввод. Пожалуйста, введите число." << endl;
-            cin.clear();
-            cin.ignore(numeric_limits<streamsize>::max(), '\n');
-        } else {
-            break;
-        }
-    }
-
-    // Вычисления и вывод результатов
-    cout << "Сумма: " << calculate_sum(num1, num2) << endl;
-    cout << "Разность: " << calculate_difference(num1, num2) << endl;
-    cout << "Произведение: " << calculate_product(num1, num2) << endl;
-
-    try {
-        double quotient = calculate_quotient(num1, num2);
-        cout << "Частное: " << quotient << endl;
-    } catch (const runtime_error& error) {
-        cerr << "Ошибка: " << error.what() << endl;
-        return 1; // Возвращаем 1 в случае ошибки
-    }
-
-    return 0;
 }
