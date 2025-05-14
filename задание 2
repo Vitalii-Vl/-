@@ -1,19 +1,18 @@
 #include <iostream>
 #include <stdlib.h>
+#include <limits>
 using namespace std;
 /**
  * @brief считывает значение с клавиатуры с проверкой ввода
  * @return введенное значение
  */
 double getValue();
- 
  /**
  * @brief рассчитывает сумму чисел
  * @param a - первое число
  * @param b - второе число
  */
  double sum (const double a, const double b);
- 
  /**
  * @brief рассчитывает разность чисел
  * @param a - первое число
@@ -27,18 +26,14 @@ double getValue();
  */
  double pro (const double a, const double b);
  /**
- * @brief проверяет существование деления на 0
- * @param b - знаменатель
+ * @brief рассчитывает частное
+ * @param b - делитель
  */
- void checkExist(const double a,const double b);
- /**
- * @brief рассчитывает частное чисел
- * @param a - первое число
- * @param b - второе число
- */
- 
  double pri (const double a, const double b);
- 
+ /**
+ * @brief точка входа в программу
+ * @return 0, если прогамма выполнена корректно, иначе 1 
+ */
  int main()
  {
   cout<<"Введите первое число ";
@@ -48,8 +43,14 @@ double getValue();
   cout<<"Сумма чисел: "<<sum(a,b)<<endl;
   cout<<"Разность чисел: "<<dif(a,b)<<endl;
   cout<<"Произведение чисел: "<<pro(a,b)<<endl;
-  checkExist(a, b);
-  cout<<"Частное чисел: "<<pri(a,b)<<endl;
+  if (abs(b)<std::numeric_limits<double>::epsilon())
+{
+cout<<"Частное чисел: "<<pri(a,b)<<endl;
+}
+else
+{
+cout<<"делить на 0 нельзя";
+}
   return 0;
  }
  double getValue()
@@ -78,11 +79,9 @@ double pro (const double a, const double b)
 {
     return a*b;
 }
-void checkExist(const double a,const double b)
+
+
+double pri (const double a, const double b)
 {
-    if (b == 0)
-    {
-        cout<<"Error"<<endl;
-        abort();
-    }
+    return a/b;
 }
