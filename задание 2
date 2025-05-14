@@ -1,0 +1,87 @@
+#include <iostream>
+#include <stdlib.h>
+#include <limits>
+using namespace std;
+/**
+ * @brief считывает значение с клавиатуры с проверкой ввода
+ * @return введенное значение
+ */
+double getValue();
+ /**
+ * @brief рассчитывает сумму чисел
+ * @param a - первое число
+ * @param b - второе число
+ */
+ double sum (const double a, const double b);
+ /**
+ * @brief рассчитывает разность чисел
+ * @param a - первое число
+ * @param b - второе число
+ */
+ double dif (const double a, const double b);
+ /**
+ * @brief рассчитывает произведение чисел
+ * @param a - первое число
+ * @param b - второе число
+ */
+ double pro (const double a, const double b);
+ /**
+ * @brief рассчитывает частное
+ * @param b - делитель
+ */
+ double pri (const double a, const double b);
+ /**
+ * @brief точка входа в программу
+ * @return 0, если прогамма выполнена корректно, иначе 1 
+ */
+ int main()
+ {
+  cout<<"Введите первое число ";
+  double a = getValue();
+  cout<<"Введите второе число ";
+  double b = getValue();
+  cout<<"Сумма чисел: "<<sum(a,b)<<endl;
+  cout<<"Разность чисел: "<<dif(a,b)<<endl;
+  cout<<"Произведение чисел: "<<pro(a,b)<<endl;
+  if (abs(b)<std::numeric_limits<double>::epsilon())
+  {
+      cout<<"Частное чисел: "<<pri(a,b)<<endl;
+  }
+  else
+  {
+     cout<<"делить на 0 нельзя";
+  }
+  return 0;
+ }
+ double getValue()
+{
+    double value = 0;
+    cin>>value;
+    if (cin.fail())
+    {
+        cout<<"Incorrect value"<<endl;
+        abort();
+    }
+    return value;
+}
+
+
+double sum (const double a, const double b)
+{
+    return a + b;
+}
+
+double dif (const double a, const double b)
+{
+    return a - b;
+}
+double pro (const double a, const double b)
+{
+    return a*b;
+}
+
+
+double pri (const double a, const double b)
+{
+    return a/b;
+}
