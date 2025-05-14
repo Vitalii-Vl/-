@@ -44,18 +44,18 @@ double getValue();
   cout<<"Разность чисел: "<<dif(a,b)<<endl;
   cout<<"Произведение чисел: "<<pro(a,b)<<endl;
   if (abs(b)<std::numeric_limits<double>::epsilon())
-{
-cout<<"Частное чисел: "<<pri(a,b)<<endl;
-}
-else
-{
-cout<<"делить на 0 нельзя";
-}
+  {
+      cout<<"Частное чисел: "<<pri(a,b)<<endl;
+  }
+  else
+  {
+     cout<<"делить на 0 нельзя";
+  }
   return 0;
  }
  double getValue()
 {
-    double value;
+    double value = 0;
     cin>>value;
     if (cin.fail())
     {
