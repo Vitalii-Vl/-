@@ -60,8 +60,6 @@ double sumByEps(double eps)
 */
 int main()
 {
-    setlocale(LC_ALL, "Russian");
-
     int n;
     double eps;
 
