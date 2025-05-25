@@ -81,8 +81,6 @@ void replaceLastNeg(int* a, int n)
 */
 int main()
 {
-    setlocale(LC_ALL, "Russian");
-
     int n;
     std::cout << "Размер массива n: ";
     std::cin >> n;
