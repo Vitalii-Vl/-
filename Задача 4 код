@@ -1,23 +1,69 @@
 #include <iostream>
-#include <math.h>
+#include <cmath>
 using namespace std;
 
 /**
-@brief - Функция для вычисления Y по заданному уравнению
-* @param x - значение переменной x
-* @return - возвращает рассчитанное значение
-*/
-double y(double x)
+ * @brief Запрашивает значение конца диапазона, которое больше начала
+ * @param prompt - текст запроса
+ * @param minValue - минимально допустимое значение
+ * @return число больше minValue
+ */
+double inputGreaterThan(const string& prompt, double minValue);
+
+/**
+ * @brief Вычисляет значение функции y(x) = sin(ln(x)) - cos(ln(x)) + 2 * ln(x)
+ * @param x - аргумент функции
+ * @return результат вычисления
+ */
+double calculateY(double x);
+
+/**
+ * @brief Выполняет цикл вычисления функции y(x) от x_start до x_end с шагом delta
+ * @param x_start - начальное значение
+ * @param x_end - конечное значение
+ * @param delta - шаг изменения x
+ */
+void computeAndPrint(double x_start, double x_end, double delta);
+
+int main()
+{
+    setlocale(LC_ALL, "Russian");
+
+    double x_start = inputGreaterThan("Введите начальное значение x (x > 0): ", 0);
+    double x_end = inputGreaterThan("Введите конечное значение x (x > начального): ", x_start);
+    double delta = inputGreaterThan("Введите шаг (delta > 0): ", 0);
+
+    computeAndPrint(x_start, x_end, delta);
+
+    return 0;
+}
+
+double inputGreaterThan(const string& prompt, double minValue)
+{
+    double value;
+    while (true) {
+        cout << prompt;
+        cin >> value;
+        if (cin.fail() || value <= minValue) {
+            cin.clear();
+            cin.ignore(10000, '\n');
+            cout << "Ошибка: значение должно быть больше " << minValue << ".\n";
+        }
+        else {
+            return value;
+        }
+    }
+}
+
+double calculateY(double x)
 {
     return sin(log(x)) - cos(log(x)) + 2 * log(x);
 }
 
-int main()
+void computeAndPrint(double x_start, double x_end, double delta)
 {
-    const double delta = 0.2; // дельта x - шаг 
-    for (double x = 1.0; x <= 3.2; x += delta)
-    {
-        cout << "Значение функции y(x) при " << x << " равно " << y(x) << endl;
+    cout << "\nРезультаты:\n";
+    for (double x = x_start; x < x_end + delta; x += delta) {
+        cout << "y(" << x << ") = " << calculateY(x) << endl;
     }
-    return 0;
 }
