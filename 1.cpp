@@ -6,6 +6,12 @@
 
 using namespace std;
 
+enum FillMode 
+{ 
+    RANDOM = 1, 
+    MANUAL = 2 
+};
+
 /**
  * @brief Ввод положительного размера (число строк или столбцов)
  * @param prompt – текст запроса
@@ -14,11 +20,11 @@ using namespace std;
 size_t inputSize(const string& prompt);
 
 /**
- * @brief Ввод режима заполнения ('R' – случайно, 'M' – вручную)
+ * @brief Ввод режима заполнения массива
  * @param prompt – текст запроса
- * @return 'R' или 'M'
+ * @return FillMode::RANDOM или FillMode::MANUAL
  */
-char inputMode(const string& prompt);
+FillMode inputMode(const string& prompt);
 
 /**
  * @brief Ввод целого числа с проверкой корректности
@@ -29,125 +35,126 @@ int inputInt(const string& prompt);
 
 /**
  * @brief Заполняет матрицу n×m случайно или вручную
- * @param matrix – указатель на массив указателей (n строк)
+ * @param matrix – ссылка на указатель на строки
  * @param n – число строк
  * @param m – число столбцов
- * @param mode – 'R' или 'M'
- * @param left – нижняя граница рандома
- * @param right – верхняя граница рандома
+ * @param mode – режим заполнения
+ * @param left – нижняя граница случайных чисел
+ * @param right – верхняя граница случайных чисел
  */
-void fillMatrix(int** matrix, size_t n, size_t m, const char& mode, const int& left, const int& right);
+void fillMatrix(int** const& matrix, size_t n, size_t m, FillMode mode, int left, int right);
 
 /**
  * @brief Выводит матрицу на экран
- * @param matrix – указатель на массив указателей
+ * @param matrix – ссылка на указатель на строки
  * @param n – число строк
  * @param m – число столбцов
- * @return void
  */
-void printMatrix(int** matrix, size_t n, size_t m);
+void printMatrix(int* const* const& matrix, size_t n, size_t m);
 
 /**
  * @brief В каждом столбце заменяет элемент с минимальным по модулю значением на противоположный
- * @param matrix – указатель на массив указателей
+ * @param matrix – ссылка на указатель на строки
  * @param n – число строк
  * @param m – число столбцов
  */
-void replaceMinAbsPerCol(int** matrix, size_t n, size_t m);
+void replaceMinAbsPerCol(int** const& matrix, size_t n, size_t m);
 
 /**
  * @brief Удаляет все строки, содержащие глобальный максимум
- * @param matrix – ссылка на указатель на массив указателей (изменяется)
- * @param n – ссылка на число строк (изменяется)
+ * @param matrix – ссылка на указатель на строки
+ * @param n – число строк
  * @param m – число столбцов
  */
 void removeRowsWithMax(int**& matrix, size_t& n, size_t m);
 
+/**
+ * @brief Точка входа в программу
+ * @return 0 при успешном завершении
+ */
 int main()
 {
     setlocale(LC_ALL, "Russian");
+
     size_t n = inputSize("Введите число строк n (>0): ");
     size_t m = inputSize("Введите число столбцов m (>0): ");
+
     int** matrix = new int* [n];
     for (size_t i = 0; i < n; ++i)
         matrix[i] = new int[m];
-    char mode = inputMode("Режим заполнения (R – случайно, M – вручную): ");
-    fillMatrix(matrix, n, m, mode, -1000, 1000);
+
+    FillMode mode = inputMode("Выберите режим заполнения: R — случайно, M — вручную: ");
+
+    const int LEFT_BOUND = -1000;
+    const int RIGHT_BOUND = 1000;
+    fillMatrix(matrix, n, m, mode, LEFT_BOUND, RIGHT_BOUND);
+
     cout << "\nИсходная матрица:\n";
     printMatrix(matrix, n, m);
+
     replaceMinAbsPerCol(matrix, n, m);
-    cout << "\nПосле замены минимальных по модулю в каждом столбце:\n";
+    cout << "\nПосле замены элементов с минимальным модулем:\n";
     printMatrix(matrix, n, m);
+
     removeRowsWithMax(matrix, n, m);
     cout << "\nПосле удаления строк с глобальным максимумом:\n";
     printMatrix(matrix, n, m);
+
     for (size_t i = 0; i < n; ++i)
         delete[] matrix[i];
     delete[] matrix;
+
     return 0;
 }
 
 size_t inputSize(const string& prompt)
 {
     long long tmp;
-    while (true) {
-        cout << prompt;
-        if (!(cin >> tmp) || tmp <= 0) {
-            cin.clear();
-            cin.ignore(10000, '\n');
-            cout << "Ошибка: введите положительное целое.\n";
-        }
-        else {
-            return static_cast<size_t>(tmp);
-        }
+    cout << prompt;
+    while (!(cin >> tmp) || tmp <= 0) {
+        cin.clear();
+        cin.ignore(10000, '\n');
+        cout << "Ошибка: введите положительное целое.\n" << prompt;
     }
+    return static_cast<size_t>(tmp);
 }
 
-char inputMode(const string& prompt)
+FillMode inputMode(const string& prompt)
 {
-    char m;
-    while (true) {
-        cout << prompt;
-        cin >> m;
+    char c;
+    cout << prompt;
+    cin >> c;
+    cin.ignore(10000, '\n');
+    while (c != 'R' && c != 'r' && c != 'M' && c != 'm') {
+        cout << "Ошибка: введите 'R' или 'M': ";
+        cin >> c;
         cin.ignore(10000, '\n');
-        switch (m) {
-        case 'r': case 'R': return 'R';
-        case 'm': case 'M': return 'M';
-        default:
-            cout << "Ошибка: введите 'R' или 'M'.\n";
-        }
     }
+    return (c == 'R' || c == 'r') ? RANDOM : MANUAL;
 }
 
 int inputInt(const string& prompt)
 {
     int value;
-    while (true) {
-        cout << prompt;
-        if (!(cin >> value)) {
-            cin.clear();
-            cin.ignore(10000, '\n');
-            cout << "Ошибка: введите целое число.\n";
-        }
-        else {
-            return value;
-        }
+    cout << prompt;
+    while (!(cin >> value)) {
+        cin.clear();
+        cin.ignore(10000, '\n');
+        cout << "Ошибка: введите целое число.\n" << prompt;
     }
+    return value;
 }
 
-void fillMatrix(int** matrix, size_t n, size_t m, const char& mode, const int& left, const int& right)
+void fillMatrix(int** const& matrix, size_t n, size_t m, FillMode mode, int left, int right)
 {
-    if (mode == 'R')
+    if (mode == RANDOM)
         srand(static_cast<unsigned>(time(nullptr)));
+
     for (size_t i = 0; i < n; ++i)
         for (size_t j = 0; j < m; ++j)
-            matrix[i][j] = (mode == 'R')
-            ? rand() % (right - left + 1) + left
-            : inputInt("matrix[" + to_string(i) + "][" + to_string(j) + "] = ");
+            matrix[i][j] = (mode == RANDOM) ? rand() % (right - left + 1) + left : inputInt("matrix[" + to_string(i) + "][" + to_string(j) + "] = ");
 }
-
-
-void printMatrix(int** matrix, size_t n, size_t m)
+void printMatrix(int* const* const& matrix, size_t n, size_t m)
 {
     for (size_t i = 0; i < n; ++i) {
         for (size_t j = 0; j < m; ++j)
@@ -156,7 +163,7 @@ void printMatrix(int** matrix, size_t n, size_t m)
     }
 }
 
-void replaceMinAbsPerCol(int** matrix, size_t n, size_t m)
+void replaceMinAbsPerCol(int** const& matrix, size_t n, size_t m)
 {
     for (size_t j = 0; j < m; ++j) {
         size_t minRow = 0;
@@ -179,34 +186,30 @@ void removeRowsWithMax(int**& matrix, size_t& n, size_t m)
         for (size_t j = 0; j < m; ++j)
             if (matrix[i][j] > globalMax)
                 globalMax = matrix[i][j];
-    size_t keepCount = 0;
+
+    size_t keep = 0;
     for (size_t i = 0; i < n; ++i) {
         bool hasMax = false;
         for (size_t j = 0; j < m; ++j)
-            if (matrix[i][j] == globalMax) {
-                hasMax = true;
-                break;
-            }
-        if (!hasMax)
-            ++keepCount;
+            if (matrix[i][j] == globalMax) { hasMax = true; break; }
+        if (!hasMax) ++keep;
     }
-    int** newMatrix = new int* [keepCount];
+
+    int** newMat = new int* [keep];
     size_t idx = 0;
     for (size_t i = 0; i < n; ++i) {
         bool hasMax = false;
         for (size_t j = 0; j < m; ++j)
-            if (matrix[i][j] == globalMax) {
-                hasMax = true;
-                break;
-            }
+            if (matrix[i][j] == globalMax) { hasMax = true; break; }
         if (hasMax) {
             delete[] matrix[i];
         }
         else {
-            newMatrix[idx++] = matrix[i];
+            newMat[idx++] = matrix[i];
         }
     }
+
     delete[] matrix;
-    matrix = newMatrix;
-    n = keepCount;
+    matrix = newMat;
+    n = keep;
 }
