@@ -1,58 +1,63 @@
 #include <iostream>
 #include <cmath>
+#include <string>
+
 using namespace std;
 
 /**
- * @brief Запрашивает значение конца диапазона, которое больше начала
- * @param prompt - текст запроса
- * @param minValue - минимально допустимое значение
- * @return число больше minValue
+ * @brief Ввод числа с опциональной проверкой на значение > minValue
+ * @param prompt – текст запроса
+ * @param minValue – минимально допустимое значение
+ * @param enforceMin – включить проверку value > minValue
+ * @return введённое число
  */
-double inputGreaterThan(const string& prompt, double minValue);
+double inputNumber(const string& prompt, double minValue, bool enforceMin);
 
 /**
- * @brief Вычисляет значение функции y(x) = sin(ln(x)) - cos(ln(x)) + 2 * ln(x)
- * @param x - аргумент функции
+ * @brief Вычисляет y(x) = sin(ln(x)) - cos(ln(x)) + 2·ln(x)
+ * @param x – аргумент функции
  * @return результат вычисления
  */
 double calculateY(double x);
 
 /**
- * @brief Выполняет цикл вычисления функции y(x) от x_start до x_end с шагом delta
- * @param x_start - начальное значение
- * @param x_end - конечное значение
- * @param delta - шаг изменения x
+ * @brief Цикл вычисления y(x) от x_start до x_end с шагом delta с проверкой ln(x)
+ * @param x_start – начальное значение
+ * @param x_end – конечное значение
+ * @param delta – шаг изменения x
  */
 void computeAndPrint(double x_start, double x_end, double delta);
 
+/**
+ * @brief Точка входа в программу
+ * @return код завершения (0 – успех)
+ */
 int main()
 {
     setlocale(LC_ALL, "Russian");
-
-    double x_start = inputGreaterThan("Введите начальное значение x (x > 0): ", 0);
-    double x_end = inputGreaterThan("Введите конечное значение x (x > начального): ", x_start);
-    double delta = inputGreaterThan("Введите шаг (delta > 0): ", 0);
-
+    double x_start = inputNumber("Введите начальное значение x: ", 0.0, false);
+    double x_end = inputNumber("Введите конечное значение x: ", x_start, true);
+    double delta = inputNumber("Введите шаг delta: ", 0.0, true);
     computeAndPrint(x_start, x_end, delta);
-
     return 0;
 }
 
-double inputGreaterThan(const string& prompt, double minValue)
+double inputNumber(const string& prompt, double minValue, bool enforceMin)
 {
     double value;
-    while (true) {
-        cout << prompt;
-        cin >> value;
-        if (cin.fail() || value <= minValue) {
+    cout << prompt;
+    while (!(cin >> value) || (enforceMin && value <= minValue)) {
+        if (cin.fail()) {
             cin.clear();
             cin.ignore(10000, '\n');
-            cout << "Ошибка: значение должно быть больше " << minValue << ".\n";
+            cout << "Ошибка ввода.\n";
         }
         else {
-            return value;
+            cout << "Ошибка: значение должно быть больше " << minValue << ".\n";
         }
+        cout << prompt;
     }
+    return value;
 }
 
 double calculateY(double x)
@@ -63,7 +68,11 @@ double calculateY(double x)
 void computeAndPrint(double x_start, double x_end, double delta)
 {
     cout << "\nРезультаты:\n";
-    for (double x = x_start; x < x_end + delta; x += delta) {
+    for (double x = x_start; x <= x_end; x += delta) {
+        if (x <= 0.0) {
+            cerr << "Пропущено x=" << x << ": вне области определения ln(x)\n";
+            continue;
+        }
         cout << "y(" << x << ") = " << calculateY(x) << endl;
     }
 }
