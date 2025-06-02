@@ -1,44 +1,27 @@
 #include <iostream>
 #include <cmath>
+#include <iomanip>
 
 using namespace std;
 
 /**
- * @brief вычисляет факториал числа k рекурсивно
- * @param k - неотрицательное целое число
- * @return k! в виде long long
- */
-long long factorial(int k);
-
-/**
- * @brief вычисляет k-й член последовательности
- * @param k - порядковый номер члена (>= 1)
- * @return значение a_k
- */
-double term(int k);
-
-/**
- * @brief вычисляет сумму первых n членов последовательности рекурсивно
- * @param n - количество членов (>= 1)
- * @return S_n — сумму первых n членов
+ * @brief вычисляет сумму первых n членов последовательности через рекуррентное выражение
+ * @param n – количество членов (>=1)
+ * @return S_n — сумма первых n членов
  */
 double sumFirstN(int n);
 
 /**
- * @brief вспомогательная рекурсивная функция для sumByEps
- * @param eps - порог отсечки
- * @param k - текущий номер члена
- * @return частичная сумма от a_k до конца
- */
-double sumByEpsRec(double eps, int k);
-
-/**
- * @brief вычисляет сумму всех членов, модуль которых не меньше eps рекурсивно
- * @param eps - положительный порог отсечки
+ * @brief вычисляет сумму всех членов, модуль которых не меньше eps, через рекуррентное выражение
+ * @param eps – положительный порог отсечки
  * @return S_eps — искомую сумму
  */
 double sumByEps(double eps);
 
+/**
+ * @brief Точка входа в программу
+ * @return код завершения программы (0 — успех)
+ */
 int main()
 {
     setlocale(LC_ALL, "Russian");
@@ -58,37 +41,38 @@ int main()
         cin.clear();
         cin.ignore(10000, '\n');
     }
-
-    cout.precision(10);
+    cout << fixed << setprecision(10);
     cout << "\nS_n = " << sumFirstN(n) << '\n';
     cout << "S_eps = " << sumByEps(eps) << '\n';
     return 0;
 }
 
-long long factorial(int k)
-{
-    return (k <= 1) ? 1 : k * factorial(k - 1);
-}
-
-double term(int k)
-{
-    long long f = factorial(k);
-    double sign = (k % 2 ? -1.0 : 1.0);
-    return sign / (f * f);
-}
-
 double sumFirstN(int n)
 {
-    return (n == 1) ? term(1) : sumFirstN(n - 1) + term(n);
-}
+    double sum = 0.0;
+    double a_k = -1.0;
 
-double sumByEpsRec(double eps, int k)
-{
-    double a = term(k);
-    return (fabs(a) < eps) ? 0.0 : a + sumByEpsRec(eps, k + 1);
+    for (int k = 1; k <= n; ++k) {
+        if (k > 1) {
+            a_k = a_k * (-1.0) / (k * k);
+        }
+        sum += a_k;
+    }
+
+    return sum;
 }
 
 double sumByEps(double eps)
 {
-    return sumByEpsRec(eps, 1);
+    double sum = 0.0;
+    double a_k = -1.0;
+    int k = 1;
+
+    while (fabs(a_k) >= eps) {
+        sum += a_k;
+        ++k;
+        a_k = a_k * (-1.0) / (k * k);
+    }
+
+    return sum;
 }
