@@ -1,78 +1,109 @@
-#include <iostream>
-#include <cmath>
-#include <string>
+#include <iostream> 
+#include <cmath> 
+#include <limits> 
+#include <cstdlib>
+#include <iomanip> 
 
 using namespace std;
 
 /**
- * @brief Ввод числа с опциональной проверкой на значение > minValue
- * @param prompt – текст запроса
- * @param minValue – минимально допустимое значение
- * @param enforceMin – включить проверку value > minValue
- * @return введённое число
+ * @brief считывает числовое значение типа double с консоли.
+ * Функция запрашивает у пользователя ввод числа и повторяет запрос, 
+пока не будет введено корректное числовое значение.
+Очищает буфер ввода в случае некорректного ввода.
+ * @return Считанное числовое значение типа double.
  */
-double inputNumber(const string& prompt, double minValue, bool enforceMin);
-
-/**
- * @brief Вычисляет y(x) = sin(ln(x)) - cos(ln(x)) + 2·ln(x)
- * @param x – аргумент функции
- * @return результат вычисления
- */
-double calculateY(double x);
-
-/**
- * @brief Цикл вычисления y(x) от x_start до x_end с шагом delta с проверкой ln(x)
- * @param x_start – начальное значение
- * @param x_end – конечное значение
- * @param delta – шаг изменения x
- */
-void computeAndPrint(double x_start, double x_end, double delta);
-
-/**
- * @brief Точка входа в программу
- * @return код завершения (0 – успех)
- */
-int main()
-{
-    setlocale(LC_ALL, "Russian");
-    double x_start = inputNumber("Введите начальное значение x: ", 0.0, false);
-    double x_end = inputNumber("Введите конечное значение x: ", x_start, true);
-    double delta = inputNumber("Введите шаг delta: ", 0.0, true);
-    computeAndPrint(x_start, x_end, delta);
-    return 0;
-}
-
-double inputNumber(const string& prompt, double minValue, bool enforceMin)
-{
+double getValue() {
     double value;
-    cout << prompt;
-    while (!(cin >> value) || (enforceMin && value <= minValue)) {
-        if (cin.fail()) {
-            cin.clear();
-            cin.ignore(10000, '\n');
-            cout << "Ошибка ввода.\n";
-        }
-        else {
-            cout << "Ошибка: значение должно быть больше " << minValue << ".\n";
-        }
-        cout << prompt;
+    while (!(cin >> value)) {
+        cout << "Некорректный ввод. Пожалуйста, введите число: ";
+        cin.clear(); // Сброс флагов ошибки ввода
+        // Игнорировать остаток строки до символа новой строки, чтобы очистить буфер
+        cin.ignore(numeric_limits<streamsize>::max(), '\n');
     }
     return value;
 }
 
-double calculateY(double x)
-{
-    return sin(log(x)) - cos(log(x)) + 2 * log(x);
+/**
+ * @brief Проверяет корректность значения шага табуляции.
+ * @param step Значение шага табуляции.
+ * @pre step должно быть числовым значением.
+ * @post Если step <= 0, программа завершается.
+ */
+void checkStep(const double step) {
+    if (step <= 0) {
+        cout << "Ошибка: Шаг табуляции должен быть положительным числом. Программа будет завершена." << endl;
+        // Завершение программы с кодом ошибки (1 обычно означает ошибку)
+        exit(1);
+    }
 }
 
-void computeAndPrint(double x_start, double x_end, double delta)
+/**
+ * @brief Вычисляет значение функции y для заданного x.
+ * @param x Аргумент функции.
+ * @return Вычисленное значение y.
+ */
+double getY(const double x) {
+    // Вычисление значения y по формуле.
+    // cbrt() - кубический корень, определен для всех вещественных чисел.
+    // sqrt() - квадратный корень, определен для неотрицательных чисел (проверяется в isDomain).
+    return x + sqrt(x) + cbrt(x) - 2.5;
+}
+
+/**
+ * @brief Проверяет, находится ли заданное значение x в области определения функции.
+ * @param x Проверяемое значение аргумента.
+ * @return true, если x находится в области определения, false в противном случае.
+ */
+bool isDomain(const double x) {
+    return x >= 0;
+}
+
+/**
+ * @brief инициализирует диапазон и шаг табуляции, затем в цикле
+ * вычисляет и выводит значения функции, проверяя область определения.
+ * @return 0 в случае успешного выполнения.
+ */
+int main()
 {
-    cout << "\nРезультаты:\n";
-    for (double x = x_start; x <= x_end; x += delta) {
-        if (x <= 0.0) {
-            cerr << "Пропущено x=" << x << ": вне области определения ln(x)\n";
-            continue;
+   
+    double xstart = 0.4; // Начальное значение x
+    double xend = 1.0; // Конечное значение x
+    double step = 0.05; // Шаг табуляции
+
+    // Вывод информации о табулируемой функции и параметрах.
+    cout << "--- Табуляция функции ---" << endl;
+    cout << "Функция: y = x + sqrt(x) + cbrt(x - 2.5)" << endl;
+    cout << "Диапазон: x от " << xstart << " до " << xend << endl;
+    cout << "Шаг: " << step << endl;
+    cout << "------------------------------------------" << endl;
+
+   
+    checkStep(step);
+
+    cout << fixed << setprecision(5);
+
+
+    for (double x = xstart; x < xend + step / 2.0; x += step)
+    {
+        double current_x = round(x * 100000.0) / 100000.0;
+
+        // Вывод значения x
+        cout << "x = " << current_x;
+
+        // Проверка, находится ли текущее x в области определения функции.
+        if (isDomain(current_x))
+        {
+            // Вывод значения y с большей точностью, чтобы избежать потери значимости.
+            cout << setprecision(10) << " y = " << getY(current_x) << endl;
         }
-        cout << "y(" << x << ") = " << calculateY(x) << endl;
+        else
+        {
+            // Если x не в области определения, выводим соответствующее сообщение.
+            cout << " (не в области определения)" << endl;
+        }
     }
+    cout << "------------------------------------------" << endl;
+
+    return 0; // Успешное завершение программы
 }
