@@ -1,212 +1,208 @@
 #include <iostream> 
-#include <cstdlib>
 #include <ctime> 
-#include <cmath> 
-#include <iomanip> 
-#include <clocale> 
+#include <cstdlib> 
+#include <limits> 
 
-using namespace std;
 
 /**
- * @brief Считывает целое число с клавиатуры.
- * @return Считанное целое число.
+ * @brief Отображает элементы массива на консоль.
+ * @param arr Указатель на первый элемент массива.
+ * @param size Размер массива.
  */
-int getValue() {
-    int value = 0;
-    cin >> value;
-    if (cin.fail()) {
-        cout << "Ошибка ввода! Введено некорректное значение. Программа будет завершена." << endl;
-        abort(); // Завершение программы в случае ошибки ввода
-    }
-    return value;
-}
+void displayArray(const int* arr, const int size);
 
 /**
- * @brief Получает размер массива (n) от пользователя.
- * Запрашивает у пользователя целое число для размера массива и
- вызывает checkN() для его валидации.
- * @return Размер массива типа size_t.
+ * @brief Заполняет массив случайными целыми числами в заданном диапазоне.
+ * Перед первым использованием rand() необходимо вызвать srand() один раз.
+ * @param arr Указатель на первый элемент массива.
+ * @param size Размер массива.
+ * @param minVal Минимальное возможное значение элемента (включительно).
+ * @param maxVal Максимальное возможное значение элемента (включительно).
  */
-size_t getSize() {
-    std::cout << "Введите размер массива (n, n > 0): ";
-    int n_int = getValue(); // Считываем как int, чтобы можно было проверить на <= 0
-    checkN(n_int); // Проверяем, что n_int > 0
-    return static_cast<size_t>(n_int); // Преобразуем к size_t
-}
+void fillArrayRandom(int* arr, int size, int minVal, int maxVal);
 
 /**
- * @brief Проверяет, что введенное значение размера массива (n) удовлетворяет условию n > 0.
- * @param n Проверяемое значение размера массива.
- * @pre n должно быть числовым значением.
- * @post Если n <= 0, программа завершается.
+ * @brief Заполняет массив числами, введенными пользователем с клавиатуры.
+ * Содержит проверку ввода для обеспечения корректности данных.
+ * @param arr Указатель на первый элемент массива.
+ * @param size Размер массива.
  */
-void checkN(const int n) {
-    if (n <= 0) {
-        cout << "Ошибка: Размер массива (n) должен быть больше нуля. Программа будет завершена." << endl;
-        abort(); // Завершение программы с кодом ошибки
-    }
-}
+void fillArrayManual(int* arr, int size);
 
 /**
- * @brief Заполняет массив целыми числами.
- * @param arr Указатель на начало массива.
- * @param n Размер массива.
- * @pre arr должен указывать на выделенную память размером n элементов.
- */
-void fillArray(int* arr, const size_t n) {
-    cout << "Выберите способ заполнения массива:" << endl;
-    cout << "1 - Ввести с клавиатуры" << endl;
-    cout << "2 - Заполнить случайными числами" << endl;
-    cout << "Ваш выбор: ";
-    int choice = getValue();
-
-    if (choice == 1) {
-        for (size_t i = 0; i < n; ++i) {
-            cout << "Введите arr[" << i + 1 << "] = ";
-            arr[i] = getValue();
-        }
-    } else if (choice == 2) {
-        srand(static_cast<unsigned int>(time(0))); 
-        for (size_t i = 0; i < n; ++i) {
-            // Генерация случайных чисел в диапазоне [-100, 100]
-            arr[i] = rand() % 201 - 100; // rand() % (max - min + 1) + min
-        }
-        cout << "Массив заполнен случайными числами." << endl;
-    } else {
-        cout << "Некорректный выбор. Программа будет завершена." << endl;
-        abort();
-    }
-}
-
-/**
- * @brief Выводит элементы массива на экран.
- * Элементы массива выводятся в одной строке через пробел.
- * @param arr Указатель на начало массива.
- * @param n Размер массива.
- * @pre arr должен указывать на валидный массив.
- */
-void printArray(int* arr, const size_t n) {
-    cout << "Элементы массива: ";
-    for (size_t i = 0; i < n; ++i) {
-        cout << arr[i] << " ";
-    }
-    cout << endl;
-}
-
-/**
- * @brief Вычисляет сумму четных элементов массива.
- * Проходит по всем элементам массива и суммирует те,
- * которые делятся на 2 без остатка.
- * @param arr Указатель на начало массива.
- * @param n Размер массива.
+ * @brief Вычисляет сумму всех четных элементов массива.
+ * @param arr Указатель на первый элемент массива.
+ * @param size Размер массива.
  * @return Сумма четных элементов массива.
  */
-int sumOfEvenElements(int* arr, const size_t n) {
-    int sum = 0;
-    for (size_t i = 0; i < n; ++i) {
+long long calculateSumOfEvenElements(const int* arr, const int size);
+
+/**
+ * @brief Подсчитывает количество элементов массива, значения которых состоят из двух цифр.
+ * @param arr Указатель на первый элемент массива.
+ * @param size Размер массива.
+ * @return Количество двухзначных чисел в массиве.
+ */
+int countTwoDigitNumbers(const int* arr, const int size);
+
+/**
+ * @brief Заменяет последний отрицательный элемент массива на модуль первого элемента массива.
+ * @param arr Указатель на первый элемент массива.
+ * @param size Размер массива.
+ */
+void replaceLastNegativeElement(int* arr, int size);
+
+int main() {
+    srand(static_cast<unsigned int>(time(0)));
+
+    int n; 
+    std::cout << "Введите размер массива (n): ";
+    while (!(std::cin >> n) || n <= 0) {
+        std::cout << "Некорректный ввод. Размер массива должен быть положительным целым числом.\n";
+        std::cin.clear(); 
+        std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
+        std::cout << "Введите размер массива (n): ";
+    }
+
+    int* myArray = new int[n];
+
+    if (myArray == nullptr) {
+        std::cerr << "Ошибка: Не удалось выделить память под массив.\n";
+        return 1; 
+    }
+
+    char choice;
+    std::cout << "Как заполнить массив? (S - случайно, K - с клавиатуры): ";
+    std::cin >> choice;
+
+    std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n'); 
+
+    if (choice == 'S' || choice == 's') {
+        // Заполнение случайными числами в диапазоне [-1000; 1000]
+        fillArrayRandom(myArray, n, -1000, 1000); 
+        std::cout << "\nМассив заполнен случайными числами:\n";
+    } else if (choice == 'K' || choice == 'k') {
+        fillArrayManual(myArray, n);
+        std::cout << "\nМассив заполнен с клавиатуры:\n";
+    } else {
+        std::cout << "Некорректный выбор. Массив будет заполнен случайными числами по умолчанию.\n";
+        fillArrayRandom(myArray, n, -1000, 1000);
+        std::cout << "\nМассив заполнен случайными числами:\n";
+    }
+    
+    displayArray(myArray, n);
+
+
+    long long sumEven = calculateSumOfEvenElements(myArray, n);
+    std::cout << "\n1. Сумма четных элементов: " << sumEven << std::endl;
+    
+    int twoDigitCount = countTwoDigitNumbers(myArray, n);
+    std::cout << "2. Количество элементов с двумя цифрами: " << twoDigitCount << std::endl;
+
+    if (n > 0) { 
+        std::cout << "\n3. Выполняется замена последнего отрицательного элемента...\n";
+        replaceLastNegativeElement(myArray, n);
+        std::cout << "Массив после возможной замены:\n";
+        displayArray(myArray, n); 
+    } else {
+        std::cout << "\n3. Массив пуст, замена элемента невозможна.\n";
+    }
+
+    delete[] myArray;
+    myArray = nullptr; // Обнуляем указатель для предотвращения "висячих" указателей
+
+    return 0;
+}
+
+void displayArray(const int* arr, int size) {
+    if (arr == nullptr || size <= 0) {
+        std::cout << "Массив пуст или некорректен для отображения.\n";
+        return;
+    }
+    std::cout << "Массив: [";
+    for (int i = 0; i < size; ++i) {
+        std::cout << arr[i];
+        if (i < size - 1) {
+            std::cout << ", ";
+        }
+    }
+    std::cout << "]" << std::endl;
+}
+
+void fillArrayRandom(int* arr, int size, int minVal, int maxVal) {
+    if (arr == nullptr || size <= 0) {
+        return; 
+    }
+    for (int i = 0; i < size; ++i) {
+        arr[i] = minVal + rand() % (maxVal - minVal + 1);
+    }
+}
+
+void fillArrayManual(int* arr, int size) {
+    if (arr == nullptr || size <= 0) {
+        return; 
+    }
+    std::cout << "Пожалуйста, введите " << size << " целых чисел:\n";
+    for (int i = 0; i < size; ++i) {
+        std::cout << "Элемент [" << i << "]: ";
+        while (!(std::cin >> arr[i])) {
+            std::cout << "Некорректный ввод. Пожалуйста, введите целое число.\n";
+            std::cin.clear(); // Сброс флагов ошибок
+            std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n'); // Очистка буфера
+            std::cout << "Элемент [" << i << "]: ";
+        }
+    }
+}
+
+long long calculateSumOfEvenElements(const int* arr, int size) {
+    long long sum = 0;
+    if (arr == nullptr || size <= 0) {
+        return 0;
+    }
+    for (int i = 0; i < size; ++i) {
         if (arr[i] % 2 == 0) {
-            sum += arr[i];
+            sum += arr[i]; 
         }
     }
     return sum;
 }
 
-/**
- * @brief Подсчитывает количество элементов массива, значения которых состоят из двух цифр.
- * Элемент считается двухзначным, если его абсолютное значение находится
- * в диапазоне от 10 до 99 включительно (например, 10, -15, 99).
- * @param arr Указатель на начало массива.
- * @param n Размер массива.
- * @return Количество двухзначных элементов.
- */
-size_t countTwoDigitElements(int* arr, const size_t n) {
-    size_t count = 0;
-    for (size_t i = 0; i < n; ++i) {
-        int val = abs(arr[i]); 
-        if (val >= 10 && val <= 99) {
-            count++;
+int countTwoDigitNumbers(const int* arr, int size) {
+    int count = 0; 
+    if (arr == nullptr || size <= 0) {
+        return 0;
+    }
+    for (int i = 0; i < size; ++i) {
+        if (std::abs(arr[i]) >= 10 && std::abs(arr[i]) <= 99) {
+            count++; 
         }
     }
     return count;
 }
 
-/**
- * @brief Находит индекс последнего отрицательного элемента в массиве.
- * Поиск начинается с конца массива к началу.
- * @param arr Указатель на начало массива.
- * @param n Размер массива.
- * @return Индекс последнего отрицательного элемента. Если отрицательных
- * элементов нет, возвращает n (размер массива).
- */
-size_t findLastNegativeIndex(int* arr, const size_t n) {
-    for (int i = static_cast<int>(n) - 1; i >= 0; --i) { // Итерируем с конца
+void replaceLastNegativeElement(int* arr, int size) {
+    if (arr == nullptr || size <= 0) {
+        std::cout << "Массив пуст или некорректен. Замена невозможна.\n";
+        return; 
+    }
+    
+    int firstElementAbsoluteValue = std::abs(arr[0]); 
+
+    int lastNegativeIndex = -1; 
+
+    for (int i = size - 1; i >= 0; --i) {
         if (arr[i] < 0) {
-            return static_cast<size_t>(i);
+            lastNegativeIndex = i;
+            break; 
         }
     }
-    return n; // Возвращаем n, если отрицательных элементов нет
-}
 
-/**
- * @brief Заменяет последний отрицательный элемент массива на модуль первого элемента.
- * Если в массиве нет отрицательных элементов, функция ничего не делает.
- * Если массив пуст (n=0), функция также ничего не делает.
- * @param arr Указатель на начало массива.
- * @param n Размер массива.
- * @pre arr должен указывать на валидный массив.
- * @post Если найден отрицательный элемент, последний из них будет заменен.
- */
-void replaceLastNegative(int* arr, const size_t n) {
-    if (n == 0) {
-        cout << "Массив пуст, замена невозможна." << endl;
-        return;
-    }
-
-    size_t last_neg_idx = findLastNegativeIndex(arr, n);
-
-    if (last_neg_idx != n) { // Если найден отрицательный элемент
-        int first_element_abs = abs(arr[0]);
-        arr[last_neg_idx] = first_element_abs;
-        cout << "Последний отрицательный элемент заменен на модуль первого элемента (" << first_element_abs << ")." << endl;
+    if (lastNegativeIndex != -1) {
+        std::cout << "Найден последний отрицательный элемент по индексу " << lastNegativeIndex 
+                  << " (значение: " << arr[lastNegativeIndex] << ").\n";
+        std::cout << "Заменяем его на модуль первого элемента: " << firstElementAbsoluteValue << ".\n";
+        arr[lastNegativeIndex] = firstElementAbsoluteValue; // Производим замену
     } else {
-        cout << "В массиве нет отрицательных элементов для замены." << endl;
+        std::cout << "Отрицательные элементы в массиве не найдены. Замена не произведена.\n";
     }
-}
-
-
-/**
- * @brief Точка входа в программу.
-* Управляет выполнением программы: запрашивает размер массива,
-выделяет память, заполняет массив, выполняет операции с ним
-и выводит результаты. Освобождает выделенную память.
- * @return 0 в случае успешного выполнения.
- */
-int main() {
-    setlocale(LC_ALL, "Russian"); // Установка русской локали для корректного вывода текста
-
-    size_t n = getSize();
-    int* arr = new int[n]; // Динамическое выделение памяти для массива
-
-
-    fillArray(arr, n);
-
-   
-    cout << "Исходный массив: ";
-    printArray(arr, n);
-
- 
-    cout << "Сумма четных элементов: " << sumOfEvenElements(arr, n) << endl;
-
- 
-    cout << "Количество двухзначных элементов: " << countTwoDigitElements(arr, n) << endl;
-
-    replaceLastNegative(arr, n);
-    cout << "Массив после замены: ";
-    printArray(arr, n); // Выводим массив после возможной замены
-
-    // Освобождение динамически выделенной памяти
-    delete[] arr;
-    arr = nullptr; // Рекомендуется обнулить указатель после освобождения памяти
-
-    return 0; // Успешное завершение программы
 }
