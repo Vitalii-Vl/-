@@ -1,420 +1,330 @@
-#include <iostream> 
+#include <iostream>
 #include <iomanip> 
-#include <ctime> 
 #include <cstdlib> 
-#include <limits> 
-#include <algorithm>
+#include <ctime> 
+#include <limits>
+#include <cmath> 
 
 
-using namespace std;
-
-
-enum FillChoice {
-    RANDOM_FILL = 5, /**< Заполнение массива случайными числами. */
-    MANUAL_FILL = 6 /**< Заполнение массива вручную с клавиатуры. */
-};
 
 /**
- * @brief Безопасно считывает целое число с клавиатуры.
- * @return Считанное целое число.
+ * @brief Создает динамический двумерный массив заданных размеров.
+ * @param rows Количество строк.
+ * @param cols Количество столбцов.
+ * @return Указатель на указатель (int**), представляющий созданный массив.
  */
-int getValue() {
-    int value = 0;
-    cin >> value;
-    if (cin.fail()) {
-        cout << "Ошибка ввода! Введено некорректное значение. Программа будет завершена." << endl;
-        // Сброс флагов ошибки и очистка буфера для предотвращения зацикливания
-        cin.clear();
-        cin.ignore(numeric_limits<streamsize>::max(), '\n');
-        abort(); // Аварийное завершение программы
-    }
-    return value;
-}
+int** createArray(int rows, int cols);
 
 /**
- * @brief Получает размерность (m или n) от пользователя.
- * Запрашивает у пользователя целое число для размера и
- * вызывает checkDimension() для его валидации.
- * @return Размерность массива типа size_t.
+ * @brief Освобождает память, выделенную для двумерного массива.
+ * @param arr Указатель на указатель на массив.
+ * @param rows Количество строк в массиве.
  */
-size_t getSize() {
-    int dim_int = getValue(); // Считываем как int, чтобы можно было проверить на <= 0
-    // Вызываем checkDimension вместо checkN, чтобы быть более общим для m и n
-    if (dim_int <= 0) {
-        cout << "Ошибка: Размерность массива должна быть больше нуля. Программа будет завершена." << endl;
-        abort();
-    }
-    return static_cast<size_t>(dim_int); // Преобразуем к size_t
-}
+void deleteArray(int** arr, int rows);
 
 /**
- * @brief Создает новый динамический двумерный массив (матрицу).
- * Выделяет память для матрицы размером m строк и n столбцов.
- * @param m Количество строк.
- * @param n Количество столбцов.
- * @return Указатель на новый двумерный массив. Возвращает nullptr, если выделение памяти не удалось.
+ * @brief Заполняет массив случайными целыми числами в заданном диапазоне.
+ * @param arr Указатель на указатель на массив.
+ * @param rows Количество строк.
+ * @param cols Количество столбцов.
  */
-int** getNewArray(const size_t m, const size_t n) {
-    if (m == 0 || n == 0) return nullptr; // Обработка нулевых размеров
-
-    int** array = new (std::nothrow) int*[m]; // Выделение памяти под указатели на строки
-    if (array == nullptr) {
-        cout << "Ошибка выделения памяти для строк." << endl;
-        abort();
-    }
-
-    for (size_t i = 0; i < m; ++i) {
-        array[i] = new (std::nothrow) int[n]; // Выделение памяти под столбцы в каждой строке
-        if (array[i] == nullptr) {
-            cout << "Ошибка выделения памяти для столбца " << i << "." << endl;
-            // Освобождаем уже выделенную память, чтобы избежать утечек
-            for (size_t k = 0; k < i; ++k) {
-                delete[] array[k];
-            }
-            delete[] array;
-            abort();
-        }
-    }
-    return array;
-}
+void fillArrayRandom(int** arr, int rows, int cols);
 
 /**
- * @brief Выводит элементы двумерного массива на экран.
- * Каждый элемент выводится с форматированием setw(6) для выравнивания.
- * @param array Указатель на двумерный массив.
- * @param m Количество строк.
- * @param n Количество столбцов.
+ * @brief Заполняет массив целыми числами, вводимыми с клавиатуры.
+ * @param arr Указатель на указатель на массив.
+ * @param rows Количество строк.
+ * @param cols Количество столбцов.
  */
-void printArray(int** array, const size_t m, const size_t n) {
-    if (array == nullptr || m == 0 || n == 0) {
-        cout << "Массив пуст или некорректен для вывода." << endl;
-        return;
-    }
-    for (size_t i = 0; i < m; ++i) {
-        for (size_t j = 0; j < n; ++j) {
-            cout << setw(6) << array[i][j];
-        }
-        cout << endl;
-    }
-}
+void fillArrayKeyboard(int** arr, int rows, int cols);
 
 /**
- * @brief Заполняет двумерный массив случайными числами.
- * Числа генерируются в заданном диапазоне [start, end].
- * @param array Указатель на двумерный массив.
- * @param m Количество строк.
- * @param n Количество столбцов.
- * @param start Нижняя граница диапазона случайных чисел.
- * @param end Верхняя граница диапазона случайных чисел.
+ * @brief Предлагает пользователю выбрать способ заполнения массива (случайно или с клавиатуры).
+ * @param arr Указатель на указатель на массив.
+ * @param rows Количество строк.
+ * @param cols Количество столбцов.
  */
-void fillRandom(int** array, const size_t m, const size_t n, const int start, const int end) {
-    // Инициализация генератора случайных чисел один раз
-    // static_cast<unsigned int>(time(0)) обеспечивает разную последовательность чисел при каждом запуске
+void chooseFillMethod(int** arr, int rows, int cols);
+
+/**
+ * @brief Выводит содержимое двумерного массива на консоль.
+ * @param arr Указатель на указатель на массив.
+ * @param rows Количество строк.
+ * @param cols Количество столбцов.
+ */
+void printArray(int** arr, int rows, int cols);
+
+/**
+ * @brief Находит минимальный по модулю элемент в заданном столбце и заменяет его на противоположный.
+ * @param arr Указатель на указатель на массив.
+ * @param rows Количество строк.
+ * @param colIndex Индекс столбца, который нужно обработать.
+ */
+void processColumnMinAbs(int** arr, int rows, int colIndex);
+
+/**
+ * @brief Проходит по каждому столбцу массива и заменяет минимальный по модулю элемент в нем на противоположный.
+ * @param arr Указатель на указатель на массив.
+ * @param rows Количество строк.
+ * @param cols Количество столбцов.
+ */
+void replaceMinAbsInEachColumn(int** arr, int rows, int cols);
+
+/**
+ * @brief Находит максимальный элемент во всем массиве.
+ * @param arr Указатель на указатель на массив.
+ * @param rows Количество строк.
+ * @param cols Количество столбцов.
+ * @return Максимальное значение в массиве.
+ */
+int findOverallMax(int** arr, int rows, int cols);
+
+/**
+ * @brief Проверяет, содержит ли заданная строка массива определенное значение.
+ * @param row Указатель на массив (строку).
+ * @param cols Количество столбцов в строке.
+ * @param value Значение для поиска.
+ * @return true, если строка содержит значение, false в противном случае.
+ */
+bool rowContainsValue(int* row, int cols, int value);
+
+/**
+ * @brief Удаляет все строки, содержащие максимальный элемент массива.
+ * @param arr Ссылка на указатель на указатель на массив (может быть изменен).
+ * @param rows Ссылка на количество строк (может быть изменено).
+ * @param cols Количество столбцов.
+ */
+void deleteRowsContainingMax(int**& arr, int& rows, int cols);
+
+
+int main() {
     srand(static_cast<unsigned int>(time(0)));
-    for (size_t i = 0; i < m; ++i) {
-        for (size_t j = 0; j < n; ++j) {
-            // Генерация числа в диапазоне [start, end]
-            array[i][j] = rand() % (end - start + 1) + start;
+
+    int n, m;
+    do {
+        std::cout << "Введите количество строк N: ";
+        std::cin >> n;
+        if (std::cin.fail() || n <= 0) {
+            std::cout << "Ошибка: N должно быть положительным целым числом." << std::endl;
+            std::cin.clear();
+            std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
         }
-    }
-    cout << "Массив заполнен случайными числами в диапазоне [" << start << ", " << end << "]." << endl;
-}
+    } while (n <= 0);
 
-/**
- * @brief Заполняет двумерный массив числами, введенными с клавиатуры.
- * @param array Указатель на двумерный массив.
- * @param m Количество строк.
- * @param n Количество столбцов.
- */
-void fillArray(int** array, const size_t m, const size_t n) {
-    if (array == nullptr || m == 0 || n == 0) {
-        cout << "Массив пуст или некорректен для заполнения." << endl;
-        return;
-    }
-    for (size_t i = 0; i < m; ++i) {
-        for (size_t j = 0; j < n; ++j) {
-            cout << "Введите array[" << i << "][" << j << "] = ";
-            array[i][j] = getValue(); // Используем безопасное считывание
+    do {
+        std::cout << "Введите количество столбцов M: ";
+        std::cin >> m;
+        if (std::cin.fail() || m <= 0) {
+            std::cout << "Ошибка: M должно быть положительным целым числом." << std::endl;
+            std::cin.clear();
+            std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
         }
-    }
-}
+    } while (m <= 0);
 
-/**
- * @brief Находит индекс максимального элемента в одномерном массиве (строке).
- * @param row Указатель на одномерный массив (строку).
- * @param n Размер одномерного массива (количество столбцов).
- * @return Индекс максимального элемента. Если массив пуст, возвращает 0.
- */
-size_t getMaxIndexInLine(int* row, const size_t n) {
-    if (n == 0) return 0; // Пустая строка
+    int** matrix = createArray(n, m);
 
-    size_t maxIndex = 0;
-    for (size_t i = 1; i < n; ++i) {
-        if (row[i] > row[maxIndex]) {
-            maxIndex = i;
-        }
-    }
-    return maxIndex;
-}
+    chooseFillMethod(matrix, n, m);
 
-/**
- * @brief Умножает максимальный элемент в каждой строке двумерного массива на 5.
- * @param array Указатель на двумерный массив.
- * @param m Количество строк.
- * @param n Количество столбцов.
- */
-void changeMaxElementInLine(int** array, const size_t m, const size_t n) {
-    if (array == nullptr || m == 0 || n == 0) {
-        cout << "Массив пуст или некорректен для изменения." << endl;
-        return;
-    }
-    for (size_t i = 0; i < m; ++i) {
-        size_t maxIndex = getMaxIndexInLine(array[i], n);
-        array[i][maxIndex] *= 5;
-    }
-    cout << "Максимальный элемент в каждой строке был умножен на 5." << endl;
-}
+    std::cout << "\n--- Исходный массив ---" << std::endl;
+    printArray(matrix, n, m);
 
-/**
- * @brief Освобождает динамически выделенную память для двумерного массива.
- * @param array Указатель на двумерный массив, который нужно удалить.
- * @param m Количество строк массива.
- */
-void deleteArray(int** array, const size_t m, const size_t n) {
-    if (array == nullptr) return; // Ничего удалять, если указатель нулевой
+ 
+    std::cout << "\n--- Выполнение Задачи 1: Замена мин. по модулю в каждом столбце ---" << std::endl;
+    replaceMinAbsInEachColumn(matrix, n, m);
+    std::cout << "Массив после Задачи 1:" << std::endl;
+    printArray(matrix, n, m);
 
-    for (size_t i = 0; i < m; ++i) {
-        delete[] array[i]; // Освобождаем память для каждого столбца
-    }
-    delete[] array; // Освобождаем память для массива указателей
-    // Примечание: Указатель array в вызывающей функции не будет обнулен,
-    // так как он передан по значению. Вызывающая функция должна обнулить его вручную.
-}
+    std::cout << "\n--- Выполнение Задачи 2: Удаление строк, содержащих максимальные элементы ---" << std::endl;
+    deleteRowsContainingMax(matrix, n, m); 
 
-/**
- * @brief Создает и возвращает копию двумерного массива.
- * Выделяет новую память и копирует все элементы из исходного массива.
- * @param sourceArray Указатель на исходный двумерный массив.
- * @param m Количество строк.
- * @param n Количество столбцов.
- * @return Указатель на новый двумерный массив, являющийся копией исходного.
- * Возвращает nullptr, если исходный массив пуст или некорректен.
- */
-int** copyArray(int** sourceArray, const size_t m, const size_t n) {
-    if (sourceArray == nullptr || m == 0 || n == 0) {
-        cout << "Невозможно скопировать пустой или некорректный массив." << endl;
-        return nullptr;
+    std::cout << "Массив после Задачи 2:" << std::endl;
+    if (n > 0) { 
+        printArray(matrix, n, m);
+    } else {
+        std::cout << "Все строки были удалены." << std::endl;
     }
 
-    int** copy = getNewArray(m, n); // Создаем новый массив того же размера
-    if (copy == nullptr) {
-        cout << "Ошибка при создании копии массива." << endl;
-        return nullptr;
-    }
+    deleteArray(matrix, n); 
 
-    for (size_t i = 0; i < m; ++i) {
-        for (size_t j = 0; j < n; ++j) {
-            copy[i][j] = sourceArray[i][j]; // Копируем элементы
-        }
-    }
-    return copy;
-}
-
-/**
- * @brief Находит минимальный отрицательный элемент во всем двумерном массиве.
- * Если отрицательных элементов нет, возвращает INT_MAX (максимальное значение int).
- * @param array Указатель на двумерный массив.
- * @param m Количество строк.
- * @param n Количество столбцов.
- * @return Минимальный отрицательный элемент или INT_MAX, если таковых нет.
- */
-int findMinNegative(int** array, const size_t m, const size_t n) {
-    if (array == nullptr || m == 0 || n == 0) return numeric_limits<int>::max();
-
-    int min_neg = numeric_limits<int>::max(); // Инициализация максимальным значением int
-    bool found_negative = false;
-
-    for (size_t i = 0; i < m; ++i) {
-        for (size_t j = 0; j < n; ++j) {
-            if (array[i][j] < 0) {
-                if (!found_negative || array[i][j] < min_neg) {
-                    min_neg = array[i][j];
-                    found_negative = true;
-                }
-            }
-        }
-    }
-    return min_neg;
-}
-
-/**
- * @brief Подсчитывает количество вхождений минимального отрицательного элемента.
- * Сначала находит минимальный отрицательный элемент с помощью findMinNegative().
- * Затем подсчитывает, сколько раз этот элемент встречается в массиве.
- * @param array Указатель на двумерный массив.
- * @param m Количество строк.
- * @param n Количество столбцов.
- * @return Количество вхождений минимального отрицательного элемента.
- * Если отрицательных элементов нет, возвращает 0.
- */
-int getCountOfMinNegative(int** array, const size_t m, const size_t n) {
-    if (array == nullptr || m == 0 || n == 0) return 0;
-
-    int min_val = findMinNegative(array, m, n);
-
-    // Если findMinNegative вернул INT_MAX, значит отрицательных элементов нет
-    if (min_val == numeric_limits<int>::max()) {
-        return 0;
-    }
-
-    int count = 0;
-    for (size_t i = 0; i < m; ++i) {
-        for (size_t j = 0; j < n; ++j) {
-            if (array[i][j] == min_val) {
-                count++;
-            }
-        }
-    }
-    return count;
-}
-
-/**
- * @brief Добавляет новые столбцы к массиву, заполняя их значением минимального отрицательного элемента.
- * Создает новый массив (newArray) с расширенным количеством столбцов.
- * Копирует элементы из sourceArray и заполняет добавленные столбцы
- * значением, полученным из findMinNegative() от sourceArray.
- * @param sourceArray Указатель на исходный двумерный массив.
- * @param m Количество строк.
- * @param original_n Исходное количество столбцов.
- * @param newArray Указатель на новый, уже выделенный двумерный массив с расширенным количеством столбцов.
- * @param new_total_n Общее количество столбцов в новом массиве (original_n + количество новых столбцов).
- */
-void addNewColumns(int** sourceArray, const size_t m, const size_t original_n,
-                   int** newArray, const size_t new_total_n) {
-    if (sourceArray == nullptr || newArray == nullptr || m == 0 || original_n == 0 || new_total_n < original_n) {
-        cout << "Ошибка: Некорректные параметры для добавления столбцов." << endl;
-        return;
-    }
-
-    int min_neg_val = findMinNegative(sourceArray, m, original_n);
-
-    for (size_t i = 0; i < m; ++i) {
-        // Копируем существующие элементы
-        for (size_t j = 0; j < original_n; ++j) {
-            newArray[i][j] = sourceArray[i][j];
-        }
-        // Заполняем новые столбцы
-        for (size_t j = original_n; j < new_total_n; ++j) {
-            newArray[i][j] = min_neg_val;
-        }
-    }
-    cout << "Добавлены новые столбцы, заполненные значением минимального отрицательного элемента (" << min_neg_val << ")." << endl;
-}
-
-/**
- * @brief Находит значение первого отрицательного элемента в массиве.
- * Итерирует по массиву построчно, слева направо, сверху вниз.
- * @param array Указатель на двумерный массив.
- * @param m Количество строк.
- * @param n Количество столбцов.
- * @return Значение первого отрицательного элемента. Если отрицательных
- * элементов нет, возвращает 0.
- */
-int findFirstNegative(int** array, const size_t m, const size_t n) {
-    if (array == nullptr || m == 0 || n == 0) return 0;
-    for (size_t i = 0; i < m; ++i) {
-        for (size_t j = 0; j < n; ++j) {
-            if (array[i][j] < 0) {
-                return array[i][j];
-            }
-        }
-    }
     return 0;
 }
 
 
-/**
- * @brief Точка входа в программу.
- * Управляет выполнением программы: запрашивает размеры матрицы,
- * выделяет память, заполняет массив, выполняет операции с ним
- * и выводит результаты. Освобождает выделенную память.
- * @return 0 в случае успешного выполнения.
- */
-int main() {
-    setlocale(LC_ALL, "Russian"); // Установка русской локали для корректного вывода текста
+int** createArray(int rows, int cols) {
+    int** arr = new int*[rows];
+    for (int i = 0; i < rows; ++i) {
+        arr[i] = new int[cols];
+    }
+    return arr;
+}
+
+void deleteArray(int** arr, int rows) {
+    if (arr == nullptr) {
+        return;
+    }
+    for (int i = 0; i < rows; ++i) {
+        delete[] arr[i]; 
+    }
+    delete[] arr;
+    arr = nullptr;
+}
+
+void fillArrayRandom(int** arr, int rows, int cols) {
+    const int MIN_VAL = -100;
+    const int MAX_VAL = 100;
+    for (int i = 0; i < rows; ++i) {
+        for (int j = 0; j < cols; ++j) {
+            arr[i][j] = rand() % (MAX_VAL - MIN_VAL + 1) + MIN_VAL;
+        }
+    }
+}
+
+void fillArrayKeyboard(int** arr, int rows, int cols) {
+    std::cout << "Пожалуйста, введите элементы массива:" << std::endl;
+    for (int i = 0; i < rows; ++i) {
+        std::cout << "Строка " << i + 1 << ":" << std::endl;
+        for (int j = 0; j < cols; ++j) {
+            int value;
+            while (true) {
+                std::cout << "Элемент [" << i << "][" << j << "]: ";
+                std::cin >> value;
+                if (std::cin.fail()) {
+                    std::cout << "Ошибка: Введите целое число." << std::endl;
+                    std::cin.clear();
+                    std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
+                } else {
+                    arr[i][j] = value;
+                    break;
+                }
+            }
+        }
+    }
+}
+
+void chooseFillMethod(int** arr, int rows, int cols) {
+    char choice;
+    do {
+        std::cout << "Как заполнить массив? (R - случайными числами, K - с клавиатуры): ";
+        std::cin >> choice;
+        choice = toupper(choice); 
+        if (choice != 'R' && choice != 'K') {
+            std::cout << "Неверный выбор. Пожалуйста, введите 'R' или 'K'." << std::endl;
+        }
+    } while (choice != 'R' && choice != 'K');
+
+    if (choice == 'R') {
+        fillArrayRandom(arr, rows, cols);
+    } else { // choice == 'K'
+        fillArrayKeyboard(arr, rows, cols);
+    }
+}
+
+void printArray(int** arr, int rows, int cols) {
+    if (arr == nullptr || rows == 0 || cols == 0) {
+        std::cout << "Массив пуст или некорректных размеров." << std::endl;
+        return;
+    }
+    for (int i = 0; i < rows; ++i) {
+        for (int j = 0; j < cols; ++j) {
+            std::cout << std::setw(5) << arr[i][j] << " ";
+        }
+        std::cout << std::endl;
+    }
+}
+
+void processColumnMinAbs(int** arr, int rows, int colIndex) {
+    if (rows == 0) return; 
+
+    int minAbsVal = std::abs(arr[0][colIndex]);
+    int minAbsRowIndex = 0;
+
+    for (int i = 1; i < rows; ++i) {
+        if (std::abs(arr[i][colIndex]) < minAbsVal) {
+            minAbsVal = std::abs(arr[i][colIndex]);
+            minAbsRowIndex = i;
+        }
+    }
+   
+    arr[minAbsRowIndex][colIndex] *= -1;
+}
+
+void replaceMinAbsInEachColumn(int** arr, int rows, int cols) {
+    for (int j = 0; j < cols; ++j) {
+        processColumnMinAbs(arr, rows, j); 
+    }
+}
+
+int findOverallMax(int** arr, int rows, int cols) {
+    if (rows == 0 || cols == 0) {
+        return std::numeric_limits<int>::min(); 
+    }
+    int maxVal = arr[0][0]; 
+
+    for (int i = 0; i < rows; ++i) {
+        for (int j = 0; j < cols; ++j) {
+            if (arr[i][j] > maxVal) {
+                maxVal = arr[i][j];
+            }
+        }
+    }
+    return maxVal;
+}
+
+bool rowContainsValue(int* row, int cols, int value) {
+    for (int j = 0; j < cols; ++j) {
+        if (row[j] == value) {
+            return true;
+        }
+    }
+    return false;
+}
+
+void deleteRowsContainingMax(int**& arr, int& rows, int cols) {
+    if (rows == 0 || cols == 0) {
+        std::cout << "Массив пуст, нет строк для удаления." << std::endl;
+        return;
+    }
+
+    int maxValue = findOverallMax(arr, rows, cols);
+
+    bool* rowsToKeep = new bool[rows];
+    int newRowsCount = 0;
+
+    for (int i = 0; i < rows; ++i) {
+        if (!rowContainsValue(arr[i], cols, maxValue)) {
+            rowsToKeep[i] = true;
+            newRowsCount++;
+        } else {
+            rowsToKeep[i] = false;
+        }
+    }
+
+    if (newRowsCount == 0) {
+        deleteArray(arr, rows);
+        arr = nullptr; 
+        rows = 0; 
+        delete[] rowsToKeep;
+        return;
+    }
 
    
-    cout << "Введите количество строк (m): ";
-    size_t m = getSize();
-    cout << "Введите количество столбцов (n): ";
-    size_t n = getSize();
+    int** newArr = createArray(newRowsCount, cols);
+    int currentRowInNewArr = 0;
 
-    // 2. Создание исходного массива
-    int** array = getNewArray(m, n);
-    if (array == nullptr) { // Проверка на случай ошибки выделения памяти
-        return 1;
-    }
-
-    cout << "Введите способ заполнения массива: " << MANUAL_FILL << " (вручную), "
-         << RANDOM_FILL << " (случайными числами): ";
-    int choice = getValue();
-
-    switch (choice) {
-        case RANDOM_FILL:
-            int start_range, end_range;
-            cout << "Введите нижнюю границу диапазона случайных чисел: ";
-            start_range = getValue();
-            cout << "Введите верхнюю границу диапазона случайных чисел: ";
-            end_range = getValue();
-            fillRandom(array, m, n, start_range, end_range);
-            break;
-        case MANUAL_FILL:
-            fillArray(array, m, n);
-            break;
-        default:
-            cout << "Некорректный выбор способа заполнения. Программа будет завершена." << endl;
-            deleteArray(array, m, n); // Освобождаем выделенную память перед выходом
-            return 1;
-    }
-
-    
-    cout << "\nИсходный массив:" << endl;
-    printArray(array, m, n);
-
-    cout << "\n--- Операция: Умножение максимальных элементов в строках на 5 ---" << endl;
-    int** arrayCopy = copyArray(array, m, n);
-    if (arrayCopy == nullptr) { // Проверка на случай ошибки копирования
-        deleteArray(array, m, n);
-        return 1;
-    }
-    changeMaxElementInLine(arrayCopy, m, n);
-    cout << "Массив после изменения (копия):" << endl;
-    printArray(arrayCopy, m, n);
-    deleteArray(arrayCopy, m, n); // Освобождаем память копии
-
-  
-    cout << "\n--- Операция: Добавление новых столбцов ---" << endl;
-    int count_min_neg = getCountOfMinNegative(array, m, n);
-    size_t new_n = n + count_min_neg; // Новое количество столбцов
-
-    cout << "Минимальный отрицательный элемент в исходном массиве встречается " << count_min_neg << " раз(а)." << endl;
-
-    if (count_min_neg > 0) {
-        int** resultArray = getNewArray(m, new_n); // Создаем новый массив с увеличенным размером
-        if (resultArray == nullptr) { // Проверка на случай ошибки выделения памяти
-            deleteArray(array, m, n);
-            return 1;
+    for (int i = 0; i < rows; ++i) {
+        if (rowsToKeep[i]) {
+            for (int j = 0; j < cols; ++j) {
+                newArr[currentRowInNewArr][j] = arr[i][j];
+            }
+            currentRowInNewArr++;
         }
-        addNewColumns(array, m, n, resultArray, new_n); // Добавляем столбцы
-        cout << "Массив после добавления столбцов:" << endl;
-        printArray(resultArray, m, new_n);
-        deleteArray(resultArray, m, new_n); // Освобождаем память результирующего массива
-    } else {
-        cout << "Отрицательных элементов или их повторений нет, новые столбцы не добавлены." << endl;
     }
 
-    deleteArray(array, m, n);
-    array = nullptr; // Обнуляем указатель после освобождения памяти
 
-    return 0; // Успешное завершение программы
+    deleteArray(arr, rows);
+
+    arr = newArr;
+    rows = newRowsCount;
+
+    delete[] rowsToKeep;
 }
