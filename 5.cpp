@@ -151,11 +151,10 @@ double sumE(const double e)
     double total_sum = 0.0;
     int i = 0;
 
-    while (fabs(current_term) > e) 
+    for (i = 0; fabs(current_term) > e; ++i)
     {
         total_sum += current_term;
-        current_term = getNext(current_term, i); 
-        i++; 
+        current_term = getNext(current_term, i);  
     }
     return total_sum;
 }
