@@ -1,75 +1,76 @@
 #include <iostream>
 #include <cmath>
-#include <iomanip> 
+#include <iomanip>
+#include <limits>
 
 using namespace std;
 
 /**
- * @brief считывает целое число с клавиатуры с проверкой ввода
- * @return считанное значение
-*/
+ * @brief Считывает целое число с клавиатуры с проверкой корректности ввода
+ * @return Возвращает считанное целое число
+ * @throw Завершает программу при ошибке ввода
+ */
 int getValue();
 
 /**
- * @brief считывает вещественное число с клавиатуры с проверкой ввода
- * @return считанное значение
-*/
+ * @brief Считывает вещественное число с клавиатуры с проверкой корректности ввода
+ * @return Возвращает считанное вещественное число
+ * @throw Завершает программу при ошибке ввода
+ */
 double getDouble();
 
 /**
- * @brief проверяет, что введенное значение удовлетваряет условию n>=1
- * @param n считанное значение
-*/
+ * @brief Проверяет корректность введенного количества членов ряда (n >= 1)
+ * @param n Количество членов ряда для проверки
+ * @throw Завершает программу при n < 1
+ */
 void checkN(const int n);
 
 /**
- * @brief Рассчитывает сумму n первых членов ряда
- * @param n заданное число членов
- * @return сумму n первых членов ряда
-*/
+ * @brief Вычисляет сумму первых n членов заданного ряда
+ * @param n Количество суммируемых членов ряда
+ * @return Сумма первых n членов ряда
+ */
 double sumN(const int n);
 
 /**
- * @brief Рассчитывает следующий член ряда через рекуррентное выражение
- * @param current текущий член ряда (a_{i+1})
- * @param i текущий 0-базовый индекс (соответствует k-1, если current это a_k)
- * @return следующий член ряда (a_{i+2})
-*/
+ * @brief Вычисляет следующий член ряда по рекуррентной формуле
+ * @param current Текущий член ряда (a_k)
+ * @param i Индекс текущего члена (0-based, соответствует k-1)
+ * @return Следующий член ряда (a_{k+1})
+ */
 double getNext(const double current, const int i);
 
 /**
- * @brief проверяет, что введенное значение удовлетваряет условию e>0
- * @param e считанное значение
-*/
+ * @brief Проверяет корректность введенной точности (e > 0)
+ * @param e Точность вычислений для проверки
+ * @throw Завершает программу при e <= 0
+ */
 void checkE(const double e);
 
 /**
- * @brief Рассчитывает сумму первых членов ряда, пока их модуль превышает e
- * @param e заданная точность
- * @return сумму первых членов ряда до заданного условия
-*/
+ * @brief Вычисляет сумму членов ряда с заданной точностью
+ * @param e Требуемая точность вычислений
+ * @return Сумма членов ряда, где абсолютное значение члена больше e
+ */
 double sumE(const double e);
 
-/**
- * @brief Точка входа в программу
- * @return возвращает 0, если программа выполнена верно
-*/
 int main()
 {
     setlocale(LC_ALL, "Russian");
-    cout << fixed << setprecision(10); 
+    cout << fixed << setprecision(10);
 
-    cout << "Введите число членов ряда для расчета последовательности: ";
+    
+    cout << "Введите число членов ряда для расчета: ";
     int n = getValue();
     checkN(n);
-
     cout << "Сумма " << n << " членов ряда равна " << sumN(n) << endl;
 
-    cout << "Введите погрешность для расчета последовательности: ";
+    
+    cout << "Введите точность вычислений: ";
     double e = getDouble();
     checkE(e);
-
-    cout << "Сумма членов ряда с точностью е равна " << sumE(e) << endl;
+    cout << "Сумма ряда с точностью " << e << " равна " << sumE(e) << endl;
 
     return 0;
 }
@@ -80,8 +81,8 @@ int getValue()
     cin >> value;
     if (cin.fail())
     {
-        cout << "Ошибка ввода: Введите целое число." << endl;
-        abort(); 
+        cerr << "Ошибка ввода: требуется целое число" << endl;
+        abort();
     }
     cin.clear();
     cin.ignore(numeric_limits<streamsize>::max(), '\n');
@@ -94,7 +95,7 @@ double getDouble()
     cin >> value;
     if (cin.fail())
     {
-        cout << "Ошибка ввода: Введите вещественное число." << endl;
+        cerr << "Ошибка ввода: требуется вещественное число" << endl;
         abort();
     }
     cin.clear();
@@ -106,55 +107,53 @@ void checkN(const int n)
 {
     if (n < 1)
     {
-        cout << "Ошибка ввода: Количество членов ряда N должно быть не менее 1." << endl;
+        cerr << "Ошибка: количество членов ряда должно быть ≥ 1" << endl;
         abort();
     }
 }
 
 double getNext(const double current, const int i)
 {
-    return current * (-1.0) / ((i + 2) * (i + 2)); 
+    const int k_plus_1 = i + 2;  
+    return current * (-1.0) / (k_plus_1 * k_plus_1);
 }
 
 double sumN(const int n)
 {
-    const double first_term = -1.0; 
+    const double a1 = -1.0; 
+    double sum = a1;
+    double current = a1;
 
-    double current_term = first_term;
-    double total_sum = 0.0;
-
-    total_sum += current_term;
-
-    
-    for (int i = 0; i < n - 1; ++i) 
-    {
-        current_term = getNext(current_term, i); 
-        total_sum += current_term;
+    for (int i = 1; i < n; ++i) {
+        current = getNext(current, i - 1);  
+        sum += current;
     }
-    return total_sum;
+    return sum;
 }
 
 void checkE(const double e)
 {
-    if (!(e > 0))
+    if (e <= 0.0)
     {
-        cout << "Ошибка ввода: Погрешность E должна быть строго больше 0." << endl;
+        cerr << "Ошибка: точность должна быть > 0" << endl;
         abort();
     }
 }
 
 double sumE(const double e)
 {
-    const double first_term = -1.0; 
+    const double a1 = -1.0;
+    const int max_iter = 1000;  
+    double sum = a1;
+    double current = a1;
 
-    double current_term = first_term;
-    double total_sum = 0.0;
-    int i = 0;
-
-    for (i = 0; fabs(current_term) > e; ++i)
-    {
-        total_sum += current_term;
-        current_term = getNext(current_term, i);  
+    for (int i = 1; i <= max_iter; ++i) {
+        if (fabs(current) <= e) {
+            break;  
+        }
+        current = getNext(current, i - 1); 
+        sum += current;
     }
-    return total_sum;
+
+    return sum;
 }
