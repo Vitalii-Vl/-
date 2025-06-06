@@ -4,8 +4,7 @@
 #include <ctime> 
 #include <limits>
 #include <cmath> 
-
-
+#include <vector>
 
 /**
  * @brief Создает динамический двумерный массив заданных размеров.
@@ -13,22 +12,24 @@
  * @param cols Количество столбцов.
  * @return Указатель на указатель (int**), представляющий созданный массив.
  */
-int** createArray(int rows, int cols);
+int** createArray(const size_t rows, const size_t cols);
 
 /**
  * @brief Освобождает память, выделенную для двумерного массива.
  * @param arr Указатель на указатель на массив.
  * @param rows Количество строк в массиве.
  */
-void deleteArray(int** arr, int rows);
+void deleteArray(int** arr, const size_t rows);
 
 /**
  * @brief Заполняет массив случайными целыми числами в заданном диапазоне.
  * @param arr Указатель на указатель на массив.
  * @param rows Количество строк.
  * @param cols Количество столбцов.
+ * @param min Минимальное значение.
+ * @param max Максимальное значение.
  */
-void fillArrayRandom(int** arr, int rows, int cols);
+void fillArrayRandom(int** arr, const size_t rows, const size_t cols, const int min, const int max);
 
 /**
  * @brief Заполняет массив целыми числами, вводимыми с клавиатуры.
@@ -36,15 +37,17 @@ void fillArrayRandom(int** arr, int rows, int cols);
  * @param rows Количество строк.
  * @param cols Количество столбцов.
  */
-void fillArrayKeyboard(int** arr, int rows, int cols);
+void fillArrayKeyboard(int** arr, const size_t rows, const size_t cols);
 
 /**
  * @brief Предлагает пользователю выбрать способ заполнения массива (случайно или с клавиатуры).
  * @param arr Указатель на указатель на массив.
  * @param rows Количество строк.
  * @param cols Количество столбцов.
+ * @param min Минимальное значение для случайного заполнения.
+ * @param max Максимальное значение для случайного заполнения.
  */
-void chooseFillMethod(int** arr, int rows, int cols);
+void chooseFillMethod(int** arr, const size_t rows, const size_t cols, const int min, const int max);
 
 /**
  * @brief Выводит содержимое двумерного массива на консоль.
@@ -52,7 +55,7 @@ void chooseFillMethod(int** arr, int rows, int cols);
  * @param rows Количество строк.
  * @param cols Количество столбцов.
  */
-void printArray(int** arr, int rows, int cols);
+void printArray(int** arr, const size_t rows, const size_t cols);
 
 /**
  * @brief Находит минимальный по модулю элемент в заданном столбце и заменяет его на противоположный.
@@ -60,7 +63,7 @@ void printArray(int** arr, int rows, int cols);
  * @param rows Количество строк.
  * @param colIndex Индекс столбца, который нужно обработать.
  */
-void processColumnMinAbs(int** arr, int rows, int colIndex);
+void processColumnMinAbs(int** arr, const size_t rows, const size_t colIndex);
 
 /**
  * @brief Проходит по каждому столбцу массива и заменяет минимальный по модулю элемент в нем на противоположный.
@@ -68,7 +71,7 @@ void processColumnMinAbs(int** arr, int rows, int colIndex);
  * @param rows Количество строк.
  * @param cols Количество столбцов.
  */
-void replaceMinAbsInEachColumn(int** arr, int rows, int cols);
+void replaceMinAbsInEachColumn(int** arr, const size_t rows, const size_t cols);
 
 /**
  * @brief Находит максимальный элемент во всем массиве.
@@ -77,7 +80,7 @@ void replaceMinAbsInEachColumn(int** arr, int rows, int cols);
  * @param cols Количество столбцов.
  * @return Максимальное значение в массиве.
  */
-int findOverallMax(int** arr, int rows, int cols);
+int findOverallMax(int** arr, const size_t rows, const size_t cols);
 
 /**
  * @brief Проверяет, содержит ли заданная строка массива определенное значение.
@@ -86,182 +89,180 @@ int findOverallMax(int** arr, int rows, int cols);
  * @param value Значение для поиска.
  * @return true, если строка содержит значение, false в противном случае.
  */
-bool rowContainsValue(int* row, int cols, int value);
+bool rowContainsValue(const int* row, const size_t cols, const int value);
 
 /**
- * @brief Удаляет все строки, содержащие максимальный элемент массива.
- * @param arr Ссылка на указатель на указатель на массив (может быть изменен).
- * @param rows Ссылка на количество строк (может быть изменено).
+ * @brief Создает копию массива с удаленными строками, содержащими максимальный элемент.
+ * @param arr Исходный массив.
+ * @param rows Количество строк.
  * @param cols Количество столбцов.
+ * @param newRows Ссылка на переменную для хранения нового количества строк.
+ * @return Указатель на новый массив.
  */
-void deleteRowsContainingMax(int**& arr, int& rows, int cols);
+int** deleteRowsContainingMax(int** arr, const size_t rows, const size_t cols, size_t& newRows);
 
+/**
+ * @brief Ввод целого числа с проверкой.
+ * @param prompt Приглашение для ввода.
+ * @return Введенное целое число.
+ */
+int inputInt(const std::string& prompt);
+
+/**
+ * @brief Ввод целого числа в заданном диапазоне с проверкой.
+ * @param prompt Приглашение для ввода.
+ * @param min Минимальное допустимое значение.
+ * @param max Максимальное допустимое значение.
+ * @return Введенное целое число.
+ */
+int inputIntInRange(const std::string& prompt, const int min, const int max);
 
 int main() {
-    srand(static_cast<unsigned int>(time(0)));
+    srand(static_cast<unsigned int>(time(nullptr)));
 
-    int n, m;
-    do {
-        std::cout << "Введите количество строк N: ";
-        std::cin >> n;
-        if (std::cin.fail() || n <= 0) {
-            std::cout << "Ошибка: N должно быть положительным целым числом." << std::endl;
-            std::cin.clear();
-            std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
-        }
-    } while (n <= 0);
-
-    do {
-        std::cout << "Введите количество столбцов M: ";
-        std::cin >> m;
-        if (std::cin.fail() || m <= 0) {
-            std::cout << "Ошибка: M должно быть положительным целым числом." << std::endl;
-            std::cin.clear();
-            std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
-        }
-    } while (m <= 0);
+    const size_t n = static_cast<size_t>(inputIntInRange("Введите количество строк N: ", 1, std::numeric_limits<int>::max()));
+    const size_t m = static_cast<size_t>(inputIntInRange("Введите количество столбцов M: ", 1, std::numeric_limits<int>::max()));
 
     int** matrix = createArray(n, m);
 
-    chooseFillMethod(matrix, n, m);
+    const int minVal = inputInt("Введите минимальное значение для случайного заполнения: ");
+    const int maxVal = inputIntInRange("Введите максимальное значение для случайного заполнения: ", minVal, std::numeric_limits<int>::max());
+
+    chooseFillMethod(matrix, n, m, minVal, maxVal);
 
     std::cout << "\n--- Исходный массив ---" << std::endl;
     printArray(matrix, n, m);
 
- 
+    int** task1Matrix = createArray(n, m);
+    for (size_t i = 0; i < n; ++i) {
+        for (size_t j = 0; j < m; ++j) {
+            task1Matrix[i][j] = matrix[i][j];
+        }
+    }
+
     std::cout << "\n--- Выполнение Задачи 1: Замена мин. по модулю в каждом столбце ---" << std::endl;
-    replaceMinAbsInEachColumn(matrix, n, m);
+    replaceMinAbsInEachColumn(task1Matrix, n, m);
     std::cout << "Массив после Задачи 1:" << std::endl;
-    printArray(matrix, n, m);
+    printArray(task1Matrix, n, m);
+    deleteArray(task1Matrix, n);
+
+    int** task2Matrix = createArray(n, m);
+    for (size_t i = 0; i < n; ++i) {
+        for (size_t j = 0; j < m; ++j) {
+            task2Matrix[i][j] = matrix[i][j];
+        }
+    }
 
     std::cout << "\n--- Выполнение Задачи 2: Удаление строк, содержащих максимальные элементы ---" << std::endl;
-    deleteRowsContainingMax(matrix, n, m); 
+    size_t newRows = 0;
+    int** resultMatrix = deleteRowsContainingMax(task2Matrix, n, m, newRows);
+    deleteArray(task2Matrix, n);
 
     std::cout << "Массив после Задачи 2:" << std::endl;
-    if (n > 0) { 
-        printArray(matrix, n, m);
+    if (newRows > 0) {
+        printArray(resultMatrix, newRows, m);
+        deleteArray(resultMatrix, newRows);
     } else {
         std::cout << "Все строки были удалены." << std::endl;
     }
 
-    deleteArray(matrix, n); 
+    deleteArray(matrix, n);
 
     return 0;
 }
 
-
-int** createArray(int rows, int cols) {
+int** createArray(const size_t rows, const size_t cols) {
     int** arr = new int*[rows];
-    for (int i = 0; i < rows; ++i) {
+    for (size_t i = 0; i < rows; ++i) {
         arr[i] = new int[cols];
     }
     return arr;
 }
 
-void deleteArray(int** arr, int rows) {
+void deleteArray(int** arr, const size_t rows) {
     if (arr == nullptr) {
         return;
     }
-    for (int i = 0; i < rows; ++i) {
-        delete[] arr[i]; 
+    for (size_t i = 0; i < rows; ++i) {
+        delete[] arr[i];
     }
     delete[] arr;
-    arr = nullptr;
 }
 
-void fillArrayRandom(int** arr, int rows, int cols) {
-    const int MIN_VAL = -100;
-    const int MAX_VAL = 100;
-    for (int i = 0; i < rows; ++i) {
-        for (int j = 0; j < cols; ++j) {
-            arr[i][j] = rand() % (MAX_VAL - MIN_VAL + 1) + MIN_VAL;
+void fillArrayRandom(int** arr, const size_t rows, const size_t cols, const int min, const int max) {
+    for (size_t i = 0; i < rows; ++i) {
+        for (size_t j = 0; j < cols; ++j) {
+            arr[i][j] = rand() % (max - min + 1) + min;
         }
     }
 }
 
-void fillArrayKeyboard(int** arr, int rows, int cols) {
+void fillArrayKeyboard(int** arr, const size_t rows, const size_t cols) {
     std::cout << "Пожалуйста, введите элементы массива:" << std::endl;
-    for (int i = 0; i < rows; ++i) {
+    for (size_t i = 0; i < rows; ++i) {
         std::cout << "Строка " << i + 1 << ":" << std::endl;
-        for (int j = 0; j < cols; ++j) {
-            int value;
-            while (true) {
-                std::cout << "Элемент [" << i << "][" << j << "]: ";
-                std::cin >> value;
-                if (std::cin.fail()) {
-                    std::cout << "Ошибка: Введите целое число." << std::endl;
-                    std::cin.clear();
-                    std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
-                } else {
-                    arr[i][j] = value;
-                    break;
-                }
-            }
+        for (size_t j = 0; j < cols; ++j) {
+            arr[i][j] = inputInt("Элемент [" + std::to_string(i) + "][" + std::to_string(j) + "]: ");
         }
     }
 }
 
-void chooseFillMethod(int** arr, int rows, int cols) {
+void chooseFillMethod(int** arr, const size_t rows, const size_t cols, const int min, const int max) {
     char choice;
-    do {
-        std::cout << "Как заполнить массив? (R - случайными числами, K - с клавиатуры): ";
-        std::cin >> choice;
-        choice = toupper(choice); 
-        if (choice != 'R' && choice != 'K') {
-            std::cout << "Неверный выбор. Пожалуйста, введите 'R' или 'K'." << std::endl;
-        }
-    } while (choice != 'R' && choice != 'K');
-
+    std::cout << "Как заполнить массив? (R - случайными числами, K - с клавиатуры): ";
+    std::cin >> choice;
+    choice = toupper(choice);
+    
     if (choice == 'R') {
-        fillArrayRandom(arr, rows, cols);
-    } else { // choice == 'K'
+        fillArrayRandom(arr, rows, cols, min, max);
+    } else {
         fillArrayKeyboard(arr, rows, cols);
     }
 }
 
-void printArray(int** arr, int rows, int cols) {
+void printArray(int** arr, const size_t rows, const size_t cols) {
     if (arr == nullptr || rows == 0 || cols == 0) {
         std::cout << "Массив пуст или некорректных размеров." << std::endl;
         return;
     }
-    for (int i = 0; i < rows; ++i) {
-        for (int j = 0; j < cols; ++j) {
+    for (size_t i = 0; i < rows; ++i) {
+        for (size_t j = 0; j < cols; ++j) {
             std::cout << std::setw(5) << arr[i][j] << " ";
         }
         std::cout << std::endl;
     }
 }
 
-void processColumnMinAbs(int** arr, int rows, int colIndex) {
-    if (rows == 0) return; 
+void processColumnMinAbs(int** arr, const size_t rows, const size_t colIndex) {
+    if (rows == 0) return;
 
     int minAbsVal = std::abs(arr[0][colIndex]);
-    int minAbsRowIndex = 0;
+    size_t minAbsRowIndex = 0;
 
-    for (int i = 1; i < rows; ++i) {
+    for (size_t i = 1; i < rows; ++i) {
         if (std::abs(arr[i][colIndex]) < minAbsVal) {
             minAbsVal = std::abs(arr[i][colIndex]);
             minAbsRowIndex = i;
         }
     }
-   
+    
     arr[minAbsRowIndex][colIndex] *= -1;
 }
 
-void replaceMinAbsInEachColumn(int** arr, int rows, int cols) {
-    for (int j = 0; j < cols; ++j) {
-        processColumnMinAbs(arr, rows, j); 
+void replaceMinAbsInEachColumn(int** arr, const size_t rows, const size_t cols) {
+    for (size_t j = 0; j < cols; ++j) {
+        processColumnMinAbs(arr, rows, j);
     }
 }
 
-int findOverallMax(int** arr, int rows, int cols) {
+int findOverallMax(int** arr, const size_t rows, const size_t cols) {
     if (rows == 0 || cols == 0) {
-        return std::numeric_limits<int>::min(); 
+        return std::numeric_limits<int>::min();
     }
-    int maxVal = arr[0][0]; 
+    int maxVal = arr[0][0];
 
-    for (int i = 0; i < rows; ++i) {
-        for (int j = 0; j < cols; ++j) {
+    for (size_t i = 0; i < rows; ++i) {
+        for (size_t j = 0; j < cols; ++j) {
             if (arr[i][j] > maxVal) {
                 maxVal = arr[i][j];
             }
@@ -270,8 +271,8 @@ int findOverallMax(int** arr, int rows, int cols) {
     return maxVal;
 }
 
-bool rowContainsValue(int* row, int cols, int value) {
-    for (int j = 0; j < cols; ++j) {
+bool rowContainsValue(const int* row, const size_t cols, const int value) {
+    for (size_t j = 0; j < cols; ++j) {
         if (row[j] == value) {
             return true;
         }
@@ -279,52 +280,54 @@ bool rowContainsValue(int* row, int cols, int value) {
     return false;
 }
 
-void deleteRowsContainingMax(int**& arr, int& rows, int cols) {
+int** deleteRowsContainingMax(int** arr, const size_t rows, const size_t cols, size_t& newRows) {
     if (rows == 0 || cols == 0) {
-        std::cout << "Массив пуст, нет строк для удаления." << std::endl;
-        return;
+        newRows = 0;
+        return nullptr;
     }
 
-    int maxValue = findOverallMax(arr, rows, cols);
+    const int maxValue = findOverallMax(arr, rows, cols);
+    std::vector<size_t> rowsToKeep;
 
-    bool* rowsToKeep = new bool[rows];
-    int newRowsCount = 0;
-
-    for (int i = 0; i < rows; ++i) {
+    for (size_t i = 0; i < rows; ++i) {
         if (!rowContainsValue(arr[i], cols, maxValue)) {
-            rowsToKeep[i] = true;
-            newRowsCount++;
-        } else {
-            rowsToKeep[i] = false;
+            rowsToKeep.push_back(i);
         }
     }
 
-    if (newRowsCount == 0) {
-        deleteArray(arr, rows);
-        arr = nullptr; 
-        rows = 0; 
-        delete[] rowsToKeep;
-        return;
+    newRows = rowsToKeep.size();
+    if (newRows == 0) {
+        return nullptr;
     }
 
-   
-    int** newArr = createArray(newRowsCount, cols);
-    int currentRowInNewArr = 0;
-
-    for (int i = 0; i < rows; ++i) {
-        if (rowsToKeep[i]) {
-            for (int j = 0; j < cols; ++j) {
-                newArr[currentRowInNewArr][j] = arr[i][j];
-            }
-            currentRowInNewArr++;
+    int** newArr = createArray(newRows, cols);
+    for (size_t i = 0; i < newRows; ++i) {
+        for (size_t j = 0; j < cols; ++j) {
+            newArr[i][j] = arr[rowsToKeep[i]][j];
         }
     }
 
+    return newArr;
+}
 
-    deleteArray(arr, rows);
+int inputInt(const std::string& prompt) {
+    int value;
+    std::cout << prompt;
+    while (!(std::cin >> value)) {
+        std::cout << "Ошибка: Введите целое число.\n" << prompt;
+        std::cin.clear();
+        std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
+    }
+    return value;
+}
 
-    arr = newArr;
-    rows = newRowsCount;
-
-    delete[] rowsToKeep;
+int inputIntInRange(const std::string& prompt, const int min, const int max) {
+    int value;
+    while (true) {
+        value = inputInt(prompt);
+        if (value >= min && value <= max) {
+            return value;
+        }
+        std::cout << "Ошибка: Число должно быть в диапазоне от " << min << " до " << max << ".\n";
+    }
 }
