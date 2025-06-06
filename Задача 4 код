@@ -1,66 +1,89 @@
 #include <iostream>
 #include <limits>
 #include <cmath>
+#include <stdexcept>
+
+using namespace std;
+
 /**
- * @brief считывает значение с клавиатуры с проверкой ввода
- * @return введенное значение
+ * @brief Считывает значение типа double с клавиатуры с проверкой на корректность ввода.
+ * @return Введенное значение типа double.
+ * @throws std::runtime_error Если ввод некорректен.
  */
 double getValue();
+
 /**
- * @brief проверяет существование введенного шага
- * @param step - шаг
+ * @brief Проверяет, является ли шаг положительным.
+ * @param step Шаг.
+ * @throws std::runtime_error Если шаг не является положительным.
  */
 void checkStep(const double step);
+
 /**
- * @brief расчитывает функцию y(x)
- * @return расчитанное значение
+ * @brief Вычисляет значение функции y(x) = sin(log(x)) - cos(log(x)) + 2*log(x).
+ * @param x Аргумент функции.
+ * @return Значение функции y(x).
+ * @throws std::domain_error Если x не входит в область определения функции (x <= 0).
  */
 double getY(const double x);
 
 /**
- * @brief точка входа в программу
- * @return 0 если программа выполнена корректно, иначе 1
+ * @brief Главная функция программы.
+ * @return 0, если программа выполнена успешно, 1 в случае ошибки.
  */
-using namespace std;
-int main()
-{
-    cout << "Enter xn: ";
-    double xstart = getValue();
-    cout << "Enter xk: ";
-    double xend = getValue();
-    cout << "Enter step: ";
-    double step = getValue();
-    checkStep(step);
-    for (double x = xstart; x < xend + step; x += step)
+int main() {
+    double xstart, xend, step;
 
-        cout << "x = " << x << " y = " << getY(x) << endl;
+    try {
+        cout <<"Enter xn: ";
+        xstart = getValue();
 
+        cout <<"Enter xk: ";
+        xend = getValue();
+
+        cout <<"Enter step: ";
+        step = getValue();
+
+        checkStep(step);
+
+        for (double x = xstart; x <= xend; x += step) { 
+            try {
+                cout <<"x = " <<x <<" y = " <<getY(x) <<endl;
+            } catch (const std::domain_error& e) {
+                cerr <<"Error at x = " <<x <<": " <<e.what() <<endl;
+            }
+        }
+
+    } catch (const std::exception& e) {
+        cerr <<"Error: " <<e.what() <<endl;
+        return 1;
+    }
 
     return 0;
 }
 
-double getValue()
-{
+double getValue() {
     double value = 0;
     cin >> value;
-    if (cin.fail())
-    {
-        cout << "Incorrect value" << endl;
-        abort();
+
+    if (cin.fail()) {
+        cin.clear(); 
+        cin.ignore(numeric_limits<streamsize>::max(), '\n');
+        throw runtime_error("Incorrect value entered.  Please enter a number.");
     }
+
     return value;
 }
 
-void checkStep(const double step)
-{
-    if (step <= 0)
-    {
-        cout << "Error value" << endl;
-        abort();
+void checkStep(const double step) {
+    if (step <= 0) {
+        throw runtime_error("Step must be a positive value.");
     }
 }
 
-double getY(const double x)
-{
-    return sin(log (x))-cos(log (x))+2*log (x);
+double getY(const double x) {
+    if (x <= 0) {
+        throw domain_error("x must be greater than 0 for the logarithm to be defined.");
+    }
+    return sin(log(x)) - cos(log(x)) + 2 * log(x);
 }
