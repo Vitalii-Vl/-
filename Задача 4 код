@@ -77,13 +77,13 @@ double getValue() {
 
 void checkStep(const double step) {
     if (step <= 0) {
-        throw runtime_error("Step must be a positive value.");
+        throw runtime_error("Шаг должен быть положительным.");
     }
 }
 
 double getY(const double x) {
     if (x <= 0) {
-        throw domain_error("x must be greater than 0 for the logarithm to be defined.");
+        throw domain_error("X должен быть больше 0.");
     }
     return sin(log(x)) - cos(log(x)) + 2 * log(x);
 }
