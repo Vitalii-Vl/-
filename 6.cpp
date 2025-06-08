@@ -35,15 +35,17 @@ int inputInt(const string& prompt);
  * @param a – указатель на начало массива
  * @param n – размер массива
  * @param mode – режим заполнения (RANDOM/MANUAL)
+ * @param left – левая граница
+ * @param right – правая граница
  */
-void fillArray(int* const a, size_t n, FillMode mode, int left, int right);
+void fillArray(int* const a, const size_t n, const FillMode mode, const int left, const int right);
 
 /**
  * @brief Вывод массива на экран
  * @param a – указатель на начало массива
  * @param n – размер массива
  */
-void printArray(const int* a, size_t n);
+void printArray(const int* a, const size_t n);
 
 /**
  * @brief Вычисление суммы чётных элементов массива
@@ -51,7 +53,7 @@ void printArray(const int* a, size_t n);
  * @param n – размер массива
  * @return сумма чётных элементов
  */
-int sumEven(const int* a, size_t n);
+int sumEven(const int* a, const size_t n);
 
 /**
  * @brief Подсчёт количества элементов с двухзначным модулем
@@ -59,15 +61,21 @@ int sumEven(const int* a, size_t n);
  * @param n – размер массива
  * @return количество элементов, |a[i]| от 10 до 99
  */
-size_t countTwoDigit(const int* a, size_t n);
+size_t countTwoDigit(const int* a, const size_t n);
 
 /**
- * @brief Замена последнего отрицательного элемента на |a[0]|
- * @param a – указатель на начало массива
+ * @brief Замена последнего отрицательного элемента на |a[0]| и вывод результата
+ * @param a – указатель на начало массива (копия)
  * @param n – размер массива
+ * @param left – левая граница
+ * @param right – правая граница
  */
-void replaceLastNeg(int* a, size_t n);
+void replaceLastNeg(int* a, const size_t n, const int left, const int right);
 
+/**
+ * @brief Точка входа в программу
+ * @return код завершения (0 – успех)
+ */
 int main()
 {
     setlocale(LC_ALL, "Russian");
@@ -80,10 +88,10 @@ int main()
     if (left > right)
     {
         cout << "Ошибка: левая граница больше правой!\n";
-        abort();
+        return 1;
     }
 
-    FillMode mode = inputMode("Заполнение (R — случайно, M — вручную): ");
+    const FillMode mode = inputMode("Заполнение (R — случайно, M — вручную): ");
 
     int* a = new int[n]();
     fillArray(a, n, mode, left, right);
@@ -92,15 +100,9 @@ int main()
 
     cout << "\nСумма чётных: " << sumEven(a, n) << "\nДвухзначных: " << countTwoDigit(a, n) << '\n';
 
-    int* b = new int[n];
-    std::copy(a, a + n, b);
-
-    replaceLastNeg(b, n);
-    cout << "\nПосле замены последнего отрицательного:\n";
-    printArray(b, n);
+    replaceLastNeg(a, n, left, right);
 
     delete[] a;
-    delete[] b;
     return 0;
 }
 
@@ -143,32 +145,26 @@ int inputInt(const string& prompt)
     return v;
 }
 
-void fillArray(int* const a, size_t n, FillMode mode, int left, int right)
+void fillArray(int* const a, const size_t n, const FillMode mode, const int left, const int right)
 {
     if (mode == FillMode::RANDOM)
         srand(static_cast<unsigned>(time(nullptr)));
 
     for (size_t i = 0; i < n; ++i)
     {
-        if (mode == FillMode::RANDOM)
-        {
-            a[i] = rand() % (right - left + 1) + left;
-        }
-        else
-        {
-            a[i] = inputInt("a[" + to_string(i) + "] = ");
-        }
+        a[i] = (mode == FillMode::RANDOM) ? rand() % (right - left + 1) + left : inputInt("a[" + to_string(i) + "] = ");
     }
 }
 
-void printArray(const int* a, size_t n)
+void printArray(const int* a, const size_t n)
 {
     for (size_t i = 0; i < n; ++i)
         cout << a[i] << ' ';
     cout << '\n';
 }
 
-int sumEven(const int* a, size_t n)
+
+int sumEven(const int* a, const size_t n)
 {
     int s = 0;
     for (size_t i = 0; i < n; ++i)
@@ -177,8 +173,7 @@ int sumEven(const int* a, size_t n)
     return s;
 }
 
-
-size_t countTwoDigit(const int* a, size_t n)
+size_t countTwoDigit(const int* a, const size_t n)
 {
     size_t count = 0;
     for (size_t i = 0; i < n; ++i)
@@ -190,12 +185,17 @@ size_t countTwoDigit(const int* a, size_t n)
     return count;
 }
 
-void replaceLastNeg(int* a, size_t n)
+void replaceLastNeg(int* a, const size_t n, const int left, const int right)
 {
     for (size_t i = n; i-- > 0; )
+    {
         if (a[i] < 0)
         {
             a[i] = abs(a[0]);
             break;
         }
+    }
+
+    cout << "\nПосле замены последнего отрицательного:\n";
+    printArray(a, n);
 }
