@@ -94,8 +94,8 @@ double sumByEps(double eps)
 
     while (fabs(a_k) >= eps) {
         sum += a_k;
+        a_k *= -1.0*(1.0 / (k * k));
         ++k;
-        a_k *= -1.0 *(1.0 / (k * k));
     }
     return sum;
 }
