@@ -80,7 +80,7 @@ double sumN(int n)
     double a_k = -1.0;
 
    for (int k = 1; k < n; ++k)
-        a_k *= -1.0*(1.0 / (k * k));
+        a_k *= 1.0 / (k * k);
         sum += a_k;
     }
     return sum;
@@ -94,7 +94,7 @@ double sumByEps(double eps)
 
     while (fabs(a_k) >= eps) {
         sum += a_k;
-        a_k *= -1.0*(1.0 / (k * k));
+        a_k *= 1.0 / (k * k);
         ++k;
     }
     return sum;
