@@ -95,7 +95,7 @@ int main()
 {
     setlocale(LC_ALL, "Russian");
 
-    size_t n = inputSize("Введите число строк n (>0): ");
+    const size_t n = inputSize("Введите число строк n (>0): ");
     const size_t m = inputSize("Введите число столбцов m (>0): ");
     int left, right;
     inputBounds(left, right);
