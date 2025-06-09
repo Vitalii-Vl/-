@@ -32,17 +32,16 @@ double getY(const double x);
  * @return 0, если программа выполнена корректно, иначе 1
  */
 int main() {
-    double xstart, xend, step;
 
   
         cout <<"Enter xn: "
-        xstart = getValue();
+       double xstart = getValue();
 
         cout <<"Enter xk: ";
-        xend = getValue();
+       double xend = getValue();
 
         cout <<"Enter step: ";
-        step = getValue();
+       double step = getValue();
 
         checkStep(step);
 
@@ -59,7 +58,8 @@ double getValue() {
     if (cin.fail()) {
         cin.clear(); 
         cin.ignore(numeric_limits<streamsize>::max(), '\n');
-        throw runtime_error("Incorrect value entered.  Please enter a number.");
+        cout...
+        abort();
     }
 
     return value;
@@ -67,13 +67,15 @@ double getValue() {
 
 void checkStep(const double step) {
     if (step <= 0) {
-        throw runtime_error("Шаг должен быть положительным.");
+        cout...
+        abort();
     }
 }
 
 double getY(const double x) {
     if (x <= 0) {
-        throw domain_error("X должен быть больше 0.");
+        cout...
+        abort();
     }
     return sin(log(x)) - cos(log(x)) + 2 * log(x);
 }
