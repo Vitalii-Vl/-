@@ -41,7 +41,7 @@ int main()
 {
     setlocale(LC_ALL, "Russian");
     int n = inputInt("n (>=1): ");
-    double eps = inputDouble("n (>=1): ");
+    double eps = inputDouble("e >0): ");
     cout << fixed << setprecision(10);
     cout << "\nS = " << sumN(n) << '\n';
     cout << "S_eps = " << sumByEps(eps) << '\n';
