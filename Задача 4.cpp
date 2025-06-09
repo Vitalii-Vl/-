@@ -45,7 +45,7 @@ int main() {
 
         checkStep(step);
 
-        for (double x = xstart; x <= xend; x += step) { 
+        for (double x = xstart; x <= xend+step; x += step) { 
                 cout <<"x = " <<x <<" y = " <<getY(x) <<endl;
 
     return 0;
@@ -58,8 +58,8 @@ double getValue() {
     if (cin.fail()) {
         cin.clear(); 
         cin.ignore(numeric_limits<streamsize>::max(), '\n');
-        cout...
-        abort();
+        cout << "Incorrect value" << endl;
+        abort(); 
     }
 
     return value;
@@ -67,14 +67,14 @@ double getValue() {
 
 void checkStep(const double step) {
     if (step <= 0) {
-        cout...
+        cout << "Error value" << endl;
         abort();
     }
 }
 
 double getY(const double x) {
     if (x <= 0) {
-        cout...
+        cout << "X must be more then 0" << endl;
         abort();
     }
     return sin(log(x)) - cos(log(x)) + 2 * log(x);
