@@ -10,9 +10,9 @@ enum FillMode
 };
 
 /**
- * @brief Ввод положительного размера
+ * @brief Ввод положительного размера (число строк или столбцов)
  * @param prompt – текст запроса
- * @return положительное целое
+ * @return положительное целое (size_t)
  */
 size_t inputSize(const string& prompt);
 
@@ -31,20 +31,11 @@ FillMode inputMode(const string& prompt);
 int inputInt(const string& prompt);
 
 /**
- * @brief Вводит границы диапазона генерации случайных чисел
- * @param left – левая граница
- * @param right – правая граница
- */
-void inputBounds(int& left, int& right);
-
-/**
  * @brief Заполняет матрицу n×m случайно или вручную
  * @param matrix – ссылка на указатель на строки
  * @param n – число строк
  * @param m – число столбцов
  * @param mode – режим заполнения
- * @param left – левая граница диапазона
- * @param right – правая граница диапазона
  */
 void fillMatrix(int** const& matrix, const size_t n, const size_t m, const FillMode mode, const int left, const int right);
 
@@ -70,7 +61,7 @@ void replaceMinAbsPerCol(int** const& matrix, const size_t n, const size_t m);
  * @param n – число строк
  * @param m – число столбцов
  */
-void removeRowsWithMax(int** matrix, size_t& n, const size_t m);
+void removeRowsWithMax(int**& matrix, size_t& n, const size_t m);
 
 /**
  * @brief Выделяет динамическую матрицу n×m
@@ -88,18 +79,32 @@ int** allocateMatrix(const size_t n, const size_t m);
 void deallocateMatrix(int** matrix, const size_t n);
 
 /**
- * @brief Точка входа в программу
- * @return код завершения (0 – успех)
+ * @brief Копирует матрицы n×m
+ * @param matrix – указатель на массив строк
+ * @param n – число строк
+ * @param m – число столбцов
+ * @return указатель на копию массива строк
  */
+int** copyMatrix(int* const* matrix, const size_t n, const size_t m);
+
+/**
+ * @brief Вводит границы диапазона генерации случайных чисел
+ * @param left – левая граница (выходной параметр)
+ * @param right – правая граница (выходной параметр). abort() при left>right
+ */
+void inputBounds(int& left, int& right);
+
 int main()
 {
     setlocale(LC_ALL, "Russian");
 
-    const size_t n = inputSize("Введите число строк n (>0): ");
-    const size_t m = inputSize("Введите число столбцов m (>0): ");
+    size_t n = inputSize("Введите число строк n (>0): ");
+    size_t m = inputSize("Введите число столбцов m (>0): ");
+
     int left, right;
     inputBounds(left, right);
-    const FillMode mode = inputMode("Выберите режим заполнения: R — случайно, M — вручную: ");
+
+    FillMode mode = inputMode("Выберите режим заполнения: R — случайно, M — вручную: ");
 
     int** matrix = allocateMatrix(n, m);
     fillMatrix(matrix, n, m, mode, left, right);
@@ -107,11 +112,19 @@ int main()
     cout << "\nИсходная матрица:\n";
     printMatrix(matrix, n, m);
 
-    replaceMinAbsPerCol(matrix, n, m);
+    int** copy = copyMatrix(matrix, n, m);
+    size_t nCopy = n;
 
-    removeRowsWithMax(matrix, n, m);
+    replaceMinAbsPerCol(copy, nCopy, m);
+    cout << "\nПосле замены элементов с минимальным модулем (копия):\n";
+    printMatrix(copy, nCopy, m);
+
+    removeRowsWithMax(copy, nCopy, m);
+    cout << "\nПосле удаления строк с глобальным максимумом (копия):\n";
+    printMatrix(copy, nCopy, m);
 
     deallocateMatrix(matrix, n);
+    deallocateMatrix(copy, nCopy);
 
     return 0;
 }
@@ -134,13 +147,13 @@ FillMode inputMode(const string& prompt)
     char c = 0;
     cout << prompt;
     cin >> c;
-    if (c != 'R' && c != 'r' && c != 'M' && c != 'm')
-    {
-        cout << "Ошибка!.\n";
-        abort();
+    switch (c) {
+    case 'r': case 'R': return RANDOM;
+    case 'm': case 'M': return MANUAL;
+    default: cout << "Ошибка!.\n"; abort();
     }
-    return (c == 'R' || c == 'r') ? RANDOM : MANUAL;
 }
+
 
 int inputInt(const string& prompt)
 {
@@ -153,33 +166,6 @@ int inputInt(const string& prompt)
         abort();
     }
     return v;
-}
-
-void inputBounds(int& left, int& right)
-{
-    left = inputInt(" Левая граница: ");
-    right = inputInt(" Правая граница: ");
-    if (left > right)
-    {
-        cout << "Ошибка!.\n";
-        abort();
-    }
-}
-
-int** allocateMatrix(const size_t n, const size_t m)
-{
-    int** mat = new int*[n];
-    for (size_t i = 0; i < n; ++i)
-        mat[i] = new int[m];
-    return mat;
-}
-
-
-void deallocateMatrix(int** matrix, const size_t n)
-{
-    for (size_t i = 0; i < n; ++i)
-        delete[] matrix[i];
-    delete[] matrix;
 }
 
 void fillMatrix(int** const& matrix, const size_t n, const size_t m, const FillMode mode, const int left, const int right)
@@ -215,11 +201,9 @@ void replaceMinAbsPerCol(int** const& matrix, const size_t n, const size_t m)
         }
         matrix[minRow][j] = -matrix[minRow][j];
     }
-    cout << "\nПосле замены элементов с минимальным модулем:\n";
-    printMatrix(matrix, n, m);
 }
 
-void removeRowsWithMax(int** matrix, size_t& n, const size_t m)
+void removeRowsWithMax(int**& matrix, size_t& n, const size_t m)
 {
     int globalMax = matrix[0][0];
     for (size_t i = 0; i < n; ++i)
@@ -227,17 +211,64 @@ void removeRowsWithMax(int** matrix, size_t& n, const size_t m)
             if (matrix[i][j] > globalMax)
                 globalMax = matrix[i][j];
 
-    size_t write = 0;
+    size_t keep = 0;
     for (size_t i = 0; i < n; ++i) {
         bool hasMax = false;
         for (size_t j = 0; j < m; ++j)
             if (matrix[i][j] == globalMax) { hasMax = true; break; }
-        if (!hasMax)
-            matrix[write++] = matrix[i];
-        else
-            delete[] matrix[i];
+        if (!hasMax) ++keep;
     }
-    n = write;
-    cout << "\nПосле удаления строк с глобальным максимумом:\n";
-    printMatrix(matrix, n, m);
+
+    int** newMat = allocateMatrix(keep, m);
+    size_t idx = 0;
+    for (size_t i = 0; i < n; ++i) {
+        bool hasMax = false;
+        for (size_t j = 0; j < m; ++j)
+            if (matrix[i][j] == globalMax) { hasMax = true; break; }
+        if (!hasMax) {
+            for (size_t j = 0; j < m; ++j)
+                newMat[idx][j] = matrix[i][j];
+            ++idx;
+        }
+        delete[] matrix[i];
+    }
+
+    delete[] matrix;
+    matrix = newMat;
+    n = keep;
+}
+
+int** allocateMatrix(const size_t n, const size_t m)
+{
+    int** mat = new int* [n];
+    for (size_t i = 0; i < n; ++i)
+        mat[i] = new int[m];
+    return mat;
+}
+
+void deallocateMatrix(int** matrix, const size_t n)
+{
+    for (size_t i = 0; i < n; ++i)
+        delete[] matrix[i];
+    delete[] matrix;
+}
+
+int** copyMatrix(int* const* matrix, const size_t n, const size_t m)
+{
+    int** mat = allocateMatrix(n, m);
+    for (size_t i = 0; i < n; ++i)
+        for (size_t j = 0; j < m; ++j)
+            mat[i][j] = matrix[i][j];
+    return mat;
+}
+
+void inputBounds(int& left, int& right)
+{
+    left = inputInt(" Левая граница: ");
+    right = inputInt(" Правая граница: ");
+    if (left > right)
+    {
+        cout << "Ошибка!.\n";
+        abort();
+    }
 }
