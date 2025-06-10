@@ -100,9 +100,13 @@ int main()
 
     cout << "\nСумма чётных: " << sumEven(a, n) << "\nДвухзначных: " << countTwoDigit(a, n) << '\n';
 
-    replaceLastNeg(a, n, left, right);
+    int* b = new int[n];
+    std::copy(a, a + n, b);
+
+    replaceLastNeg(b, n, left, right);
 
     delete[] a;
+    delete[] b;
     return 0;
 }
 
@@ -124,12 +128,11 @@ FillMode inputMode(const string& prompt)
     char c = 0;
     cout << prompt;
     cin >> c;
-    if (c != 'R' && c != 'r' && c != 'M' && c != 'm')
-    {
-        cout << "Ошибка: режим должен быть R/r или M/m!\n";
-        abort();
+    switch (c) {
+    case 'r': case 'R': return FillMode::RANDOM;
+    case 'm': case 'M': return FillMode::MANUAL;
+    default: cout << "Ошибка!.\n"; abort();
     }
-    return (c == 'R' || c == 'r') ? FillMode::RANDOM : FillMode::MANUAL;
 }
 
 int inputInt(const string& prompt)
@@ -199,3 +202,4 @@ void replaceLastNeg(int* a, const size_t n, const int left, const int right)
     cout << "\nПосле замены последнего отрицательного:\n";
     printArray(a, n);
 }
+
