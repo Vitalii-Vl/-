@@ -78,10 +78,10 @@ double getY(const double x){
     return sin(log(x)) - cos(log(x)) + 2 * log(x);
 }
 
-void computeAndPrint(const double x_start, const double x_end, const double delta)
+void computeAndPrint(const double xstart, const double xend, const double delta)
 {
     cout << "\nРезультаты:\n";
-    for (double x = x_start; x <= x_end; x += delta) {
+    for (double x = xstart; x <= xend; x += step) {
         if (x <= 0.0) {
             cout << "Пропущено x=" << x << ": вне области определения ln(x)\n";
             continue;
