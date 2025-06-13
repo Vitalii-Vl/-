@@ -78,7 +78,7 @@ double getY(const double x){
     return sin(log(x)) - cos(log(x)) + 2 * log(x);
 }
 
-void computeAndPrint(const double xstart, const double xend, const double delta)
+void computeAndPrint(const double xstart, const double xend, const double step)
 {
     cout << "\nРезультаты:\n";
     for (double x = xstart; x <= xend; x += step) {
