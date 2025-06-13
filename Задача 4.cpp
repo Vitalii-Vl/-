@@ -30,7 +30,7 @@ double getY(const double x);
  * @param x_end – конечное значение
  * @param step – шаг изменения x
  */
-void computeAndPrint(const double x_start, const double x_end, const double step);
+void computeAndPrint(const double xstart, const double xend, const double step);
 
 /**
  * @brief Главная функция программы.
