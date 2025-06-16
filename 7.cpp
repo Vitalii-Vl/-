@@ -94,6 +94,10 @@ int** copyMatrix(int* const* matrix, const size_t n, const size_t m);
  */
 void inputBounds(int& left, int& right);
 
+/**
+ * @brief Точка входа в программу
+ * @return код завершения (0 – успех)
+ */
 int main()
 {
     setlocale(LC_ALL, "Russian");
